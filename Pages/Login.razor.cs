@@ -12,10 +12,10 @@ public partial class LoginPage : ComponentBase
     protected string password = string.Empty;
     protected string? errorMessage;
     protected bool loading;
-    protected string BannerEyebrow { get; set; } = "PLATAFORMA DE DESENVOLVIMENTO";
-    protected string BannerTitle { get; set; } = "Comece com uma base";
-    protected string BannerHighlight { get; set; } = "pronta para crescer.";
-    protected string BannerDescription { get; set; } = "Autenticação, sessão e integração com API já organizadas para você construir a próxima aplicação.";
+    protected string BannerEyebrow { get; set; } = "GAMES · ESTUDO · DESENHO";
+    protected string BannerTitle { get; set; } = "Toda ideia pode virar";
+    protected string BannerHighlight { get; set; } = "uma nova descoberta.";
+    protected string BannerDescription { get; set; } = "Jogue, estude e desenhe enquanto transforma curiosidade em novas possibilidades.";
 
     protected async Task HandleLoginAsync()
     {

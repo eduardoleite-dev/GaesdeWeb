@@ -1,11 +1,11 @@
 ﻿@page "/"
 @inherits IndexPage
 
-<PageTitle>Home | GaesdeWeb</PageTitle>
+<PageTitle>Gaesde | Games, Estudo e Desenho</PageTitle>
 
 <header class="app-topbar">
 	<button class="menu-button" aria-label="Abrir menu">☰</button>
-	<div class="search-box"><span>⌕</span><input placeholder="Buscar recursos..." aria-label="Buscar recursos" /></div>
+	<div class="search-box"><span>⌕</span><input placeholder="Buscar uma conversa..." aria-label="Buscar conversas" /></div>
 	<div class="account-area">
 		<span class="notification-dot">♧</span>
 		<div class="account-divider"></div>
@@ -18,29 +18,29 @@
 <main class="dashboard-content">
 	<section class="welcome-banner">
 		<div>
-			<p class="banner-date">Base autenticada · sessão ativa</p>
+			<p class="banner-date">GAESDE · Games, Estudo e Desenho</p>
 			<h1>Olá, @DisplayName! <span>👋</span></h1>
-			<p>Seu ambiente está pronto. Use os cartões abaixo para validar a comunicação com a API.</p>
+			<p>Seu espaço de aprendizagem está pronto para a próxima pergunta.</p>
 		</div>
 		<button class="banner-action" @onclick="LoadPrivateAsync" disabled="@privateLoading || !HasSession">
-			@(privateLoading ? "Consultando..." : "Verificar acesso →")
+			@(privateLoading ? "Pensando..." : "Continuar conversa →")
 		</button>
 	</section>
 
 	<section class="dashboard-cards" aria-live="polite">
 		<article class="dashboard-card card-public">
 			<div class="card-symbol">◎</div>
-			<span class="card-label">ENDPOINT PÚBLICO</span>
-			<h2>Hello World público</h2>
-			<p>@(publicMessage ?? "Nenhuma consulta realizada.")</p>
-			<button class="card-action" @onclick="LoadPublicAsync" disabled="@publicLoading">@(publicLoading ? "Consultando..." : "Consultar endpoint")</button>
+			<span class="card-label">CONVERSA ABERTA</span>
+			<h2>Explore um assunto</h2>
+			<p>@(publicMessage ?? "Escolha um tema para começar a aprender.")</p>
+			<button class="card-action" @onclick="LoadPublicAsync" disabled="@publicLoading">@(publicLoading ? "Carregando..." : "Explorar assunto")</button>
 		</article>
 		<article class="dashboard-card card-private">
 			<div class="card-symbol">◆</div>
-			<span class="card-label">ENDPOINT PROTEGIDO</span>
-			<h2>Hello World privado</h2>
-			<p>@(privateMessage ?? "Disponível após autenticação.")</p>
-			<button class="card-action" @onclick="LoadPrivateAsync" disabled="@privateLoading || !HasSession">@(privateLoading ? "Consultando..." : "Consultar com token")</button>
+			<span class="card-label">SEU APRENDIZADO</span>
+			<h2>Continue sua trilha</h2>
+			<p>@(privateMessage ?? "Sua conversa personalizada aparece aqui.")</p>
+			<button class="card-action" @onclick="LoadPrivateAsync" disabled="@privateLoading || !HasSession">@(privateLoading ? "Carregando..." : "Abrir conversa")</button>
 		</article>
 	</section>
 

@@ -25,6 +25,12 @@ public partial class IndexPage : ComponentBase
             return;
 
         SessionData = await Session.GetAsync();
+        if (SessionData is null)
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
         await LoadPublicAsync();
         StateHasChanged();
     }

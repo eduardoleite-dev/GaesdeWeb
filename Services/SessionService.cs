@@ -18,7 +18,7 @@ public sealed class SessionService
             return null;
 
         var session = JsonSerializer.Deserialize<SessionData>(json);
-        if (session is null || session.IsExpired)
+        if (session is null || string.IsNullOrWhiteSpace(session.Token) || session.IsExpired)
         {
             await ClearAsync();
             return null;

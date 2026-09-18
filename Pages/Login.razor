@@ -2,29 +2,24 @@
 @layout EmptyLayout
 @inherits LoginPage
 
-<PageTitle>Login | GaesdeWeb</PageTitle>
+<PageTitle>Login | GAESDE</PageTitle>
 
 <div class="login-page">
     <section class="login-banner">
-        <div class="banner-brand"><span class="brand-mark">A</span> ArquiteturaBase</div>
+        <div class="banner-brand"><span class="brand-mark">G</span> GAESDE</div>
         <div class="banner-copy">
             <p class="eyebrow">@BannerEyebrow</p>
             <h1>@BannerTitle<br /><em>@BannerHighlight</em></h1>
             <p>@BannerDescription</p>
         </div>
-        <div class="banner-stats">
-            <div><strong>100%</strong><span>Base reutilizável</span></div>
-            <div><strong>JWT</strong><span>Sessão protegida</span></div>
-            <div><strong>.NET 10</strong><span>Pronto para evoluir</span></div>
-        </div>
-        <div class="banner-quote">“Uma base clara transforma o primeiro commit em um caminho seguro para crescer.”</div>
+        <div class="banner-quote">“Toda pergunta pode abrir um novo caminho para aprender.”</div>
     </section>
 
     <section class="login-panel">
         <div class="login-panel-inner">
-            <p class="eyebrow">ACESSO À APLICAÇÃO</p>
-            <h2>Bem-vindo de volta</h2>
-            <p class="login-subtitle">Acesse sua conta para continuar.</p>
+            <p class="eyebrow">ENTRAR NO GAESDE</p>
+            <h2>Vamos criar juntos</h2>
+            <p class="login-subtitle">Games, estudo e desenho para explorar novas ideias.</p>
 
             <form @onsubmit="HandleLoginAsync" @onsubmit:preventDefault>
                 <label for="username">Usuário</label>
@@ -39,7 +34,7 @@
                 }
 
                 <button class="button primary full-width" type="submit" disabled="@loading">
-                    @(loading ? "Autenticando..." : "Entrar na aplicação")
+                    @(loading ? "Entrando..." : "Começar conversa")
                 </button>
             </form>
         </div>
