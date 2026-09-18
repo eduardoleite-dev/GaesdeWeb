@@ -27,25 +27,25 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/EmptyLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = RW1wdHlMYXlvdXQucmF6b3I=
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Layouts/EmptyLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0c1xFbXB0eUxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/MainLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = TWFpbkxheW91dC5yYXpvcg==
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Layouts/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0c1xNYWluTGF5b3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Index.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-hb6am6vrsj
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Index/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXhcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-1z0yvk0jup
 
-[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Login.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-1570hrm08y
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Login/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW5cTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-ah8s5yprat
 
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/_Host.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
