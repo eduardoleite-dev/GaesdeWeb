@@ -1,0 +1,68 @@
+@page "/users"
+@layout MainLayout
+@inherits UsersPage
+
+<PageTitle>Usuários | GAESDE</PageTitle>
+
+<main class="users-page">
+    <section class="users-toolbar">
+        <div><p class="eyebrow">ADMINISTRAÇÃO DO GAESDE</p><h1>Usuários</h1><p>Crie contas e defina o nível de acesso de cada pessoa.</p></div>
+        <button class="crud-button" @onclick="OpenCreateForm"><span aria-hidden="true">+</span> Adicionar usuário</button>
+    </section>
+
+    <form class="users-search" @onsubmit="SearchAsync" @onsubmit:preventDefault>
+        <label for="user-search">Buscar usuário</label><span aria-hidden="true">⌕</span><input id="user-search" @bind="search" placeholder="Buscar por nome ou e-mail..." disabled="@loading" /><button class="search-button" type="submit" aria-label="Buscar usuário" title="Buscar usuário" disabled="@loading">⌕</button>
+    </form>
+
+    @if (showForm)
+    {
+        <section class="user-form-panel">
+            <p class="eyebrow">@(editingId is null ? "NOVO USUÁRIO" : "EDITAR USUÁRIO")</p><h2>@(editingId is null ? "Adicionar usuário" : "Editar usuário")</h2>
+            <form class="user-form" @onsubmit="SaveAsync" @onsubmit:preventDefault>
+                <div class="form-field"><label for="user-name">Nome</label><input id="user-name" @bind="name" placeholder="Nome completo" disabled="@saving" /></div>
+                <div class="form-field"><label for="user-email">E-mail</label><input id="user-email" type="email" @bind="email" placeholder="usuario@exemplo.com" disabled="@saving" /></div>
+                <div class="form-field"><label for="user-password">Senha @(editingId is null ? "" : "(opcional)")</label><input id="user-password" type="password" @bind="password" placeholder="@(editingId is null ? "Senha inicial" : "Manter senha atual")" disabled="@saving" /></div>
+                <div class="form-field"><label for="user-access">Nível de acesso</label><select id="user-access" @bind="accessLevel" disabled="@saving"><option value="0">Administrador</option><option value="2">Professor</option><option value="3">Aluno</option><option value="4">Vendedor</option></select></div>
+                <div class="form-field wide">
+                    <label for="user-avatar">Foto do usuário</label>
+                    <InputFile id="user-avatar" OnChange="SelectAvatar" accept="image/jpeg,image/png,image/webp,image/gif" disabled="@saving" />
+                    @if (!string.IsNullOrWhiteSpace(selectedAvatarName))
+                    {
+                        <small class="selected-file">@selectedAvatarName</small>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(avatarUrl))
+                    {
+                        <small class="selected-file">Foto atual cadastrada</small>
+                    }
+                </div>
+                <div class="form-field wide"><label for="user-bio">Biografia</label><textarea id="user-bio" @bind="bio" rows="3" placeholder="Uma breve apresentação..." disabled="@saving"></textarea></div>
+                <div class="form-actions"><button class="crud-button" type="submit" disabled="@saving">@(saving ? "Salvando..." : "Salvar usuário")</button><button class="plain-button" type="button" @onclick="CloseForm" disabled="@saving">Cancelar</button></div>
+                @if (!string.IsNullOrWhiteSpace(formMessage)){<p class="error wide" role="alert">@formMessage</p>}
+            </form>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p class="error" role="alert">@errorMessage</p>
+    }
+    else if (loading && Users.Count == 0)
+    {
+        <p class="user-status">Carregando usuários...</p>
+    }
+    else if (Users.Count == 0)
+    {
+        <section class="user-empty"><span aria-hidden="true">◎</span><h2>Nenhum usuário encontrado</h2><p>Adicione um usuário ou ajuste sua busca.</p></section>
+    }
+    else
+    {
+        <section class="user-list" aria-live="polite">
+            <div class="user-list-header"><span>Usuário</span><span>Nível de acesso</span><span>Ações</span></div>
+            @foreach (var user in Users)
+            {
+                <div class="user-row"><div class="user-name">@if (!string.IsNullOrWhiteSpace(user.AvatarUrl)){<img class="user-avatar image" src="@user.AvatarUrl" alt="" />}else{<span class="user-avatar">@(user.Name[..1].ToUpperInvariant())</span>}<div><strong>@user.Name</strong><small>@user.Email</small></div></div><span class="access-badge">@AccessLevelName(user.AccessLevel)</span><div class="user-actions"><button class="plain-button" @onclick="() => OpenEditForm(user)">Editar</button><button class="plain-button danger" @onclick="() => DeleteAsync(user)">Excluir</button></div></div>
+            }
+        </section>
+        <nav class="user-pagination" aria-label="Paginação de usuários"><button class="pagination-button" @onclick="PreviousPageAsync" disabled="@(loading || Page <= 1)">← Anterior</button><span>Página <strong>@Page</strong> de @TotalPages</span><button class="pagination-button" @onclick="NextPageAsync" disabled="@(loading || Page >= TotalPages)">Próxima →</button></nav>
+    }
+</main>

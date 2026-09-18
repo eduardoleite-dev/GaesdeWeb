@@ -1,0 +1,106 @@
+@page "/categories"
+@layout MainLayout
+@inherits CategoriesPage
+
+<PageTitle>Categorias | GAESDE</PageTitle>
+
+<main class="categories-page">
+    <section class="categories-toolbar">
+        <div class="categories-heading">
+            <h1>Categorias</h1>
+            <p>Crie e organize as categorias.</p>
+        </div>
+        <button class="button add-category-button" @onclick="OpenCreateForm">
+            <span class="add-icon" aria-hidden="true">+</span>
+            <span>Adicionar categoria</span>
+        </button>
+    </section>
+
+    <form class="category-search" @onsubmit="SearchAsync" @onsubmit:preventDefault>
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <label for="category-search-input">Buscar categoria</label>
+        <input id="category-search-input" @bind="search" placeholder="Ex.: programação, arte..." disabled="@loading" />
+        <button class="button search-button" type="submit" aria-label="Buscar categoria" title="Buscar categoria" disabled="@loading">⌕</button>
+    </form>
+
+    @if (showForm)
+    {
+        <section class="category-form-panel">
+            <div>
+                <p class="eyebrow">@(editingId is null ? "NOVA CATEGORIA" : "EDITAR CATEGORIA")</p>
+                <h2>@(editingId is null ? "Adicionar categoria" : "Editar categoria")</h2>
+            </div>
+            <form @onsubmit="SaveAsync" @onsubmit:preventDefault>
+                <label for="category-name">Nome</label>
+                <div class="category-form-row">
+                    <input id="category-name" @bind="categoryName" placeholder="Ex.: Matemática" disabled="@saving" />
+                    <button class="button primary" type="submit" disabled="@saving">@(saving ? "Salvando..." : "Salvar")</button>
+                    <button class="button secondary" type="button" @onclick="CloseForm" disabled="@saving">Cancelar</button>
+                </div>
+                <label for="category-image">Imagem da categoria</label>
+                <InputFile id="category-image" OnChange="SelectImage" accept="image/jpeg,image/png,image/webp,image/gif" disabled="@saving" />
+                @if (!string.IsNullOrWhiteSpace(selectedImageName))
+                {
+                    <small class="selected-file">@selectedImageName</small>
+                }
+                @if (!string.IsNullOrWhiteSpace(formMessage))
+                {
+                    <p class="error" role="alert">@formMessage</p>
+                }
+            </form>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p class="error" role="alert">@errorMessage</p>
+    }
+    else if (loading)
+    {
+        <p class="category-status">Carregando categorias...</p>
+    }
+    else if (Categories.Count == 0)
+    {
+        <section class="category-empty">
+            <span class="empty-icon" aria-hidden="true">◎</span>
+            <h2>Nenhuma categoria encontrada</h2>
+            <p>Adicione a primeira categoria ou tente buscar por outro termo.</p>
+        </section>
+    }
+    else
+    {
+        <section class="category-list" aria-live="polite">
+            <div class="category-list-header"><span>Nome da categoria</span><span>Ações</span></div>
+            @foreach (var category in Categories)
+            {
+                <div class="category-row">
+                    <div class="category-name">
+                        @if (!string.IsNullOrWhiteSpace(category.ImageUrl))
+                        {
+                            <img class="category-row-image" src="@category.ImageUrl" alt="" />
+                        }
+                        else
+                        {
+                            <span class="category-row-icon" aria-hidden="true">◎</span>
+                        }
+                        <strong>@category.Name</strong>
+                    </div>
+                    <div class="category-actions">
+                        <button class="icon-button" title="Editar categoria" @onclick="() => OpenEditForm(category)">Editar</button>
+                        <button class="icon-button danger" title="Excluir categoria" @onclick="() => DeleteAsync(category)">Excluir</button>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <nav class="category-pagination" aria-label="Paginação de categorias">
+            <button class="pagination-button" @onclick="PreviousPageAsync" aria-label="Página anterior" disabled="@(loading || Page <= 1)">
+                <span aria-hidden="true">←</span> Anterior
+            </button>
+            <span class="pagination-indicator">Página <strong>@Page</strong> de @TotalPages</span>
+            <button class="pagination-button" @onclick="NextPageAsync" aria-label="Próxima página" disabled="@(loading || Page >= TotalPages)">
+                Próxima <span aria-hidden="true">→</span>
+            </button>
+        </nav>
+    }
+</main>

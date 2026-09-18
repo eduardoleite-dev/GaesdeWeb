@@ -16,6 +16,14 @@ public sealed record SessionData(string Token, DateTimeOffset ExpiresAt, string 
     public string Role { get; init; } = "Usuário";
     public string DisplayName => string.IsNullOrWhiteSpace(UserId) ? Username : UserId;
     public bool IsExpired => ExpiresAt <= DateTimeOffset.UtcNow;
+    public bool CanManageUsers => IsAdministratorOrProfessor(Role) || IsAdministratorOrProfessor(AccessLevel);
+
+    private static bool IsAdministratorOrProfessor(string value) => value.Trim() switch
+    {
+        "0" or "2" => true,
+        "Administrador" or "administrador" or "Administrator" or "administrator" or "Professor" or "professor" => true,
+        _ => false
+    };
 }
 
 public sealed record HelloWorldResponse(

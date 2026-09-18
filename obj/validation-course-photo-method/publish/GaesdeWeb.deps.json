@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "GaesdeWeb/1.0.0": {
+        "runtime": {
+          "GaesdeWeb.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GaesdeWeb/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

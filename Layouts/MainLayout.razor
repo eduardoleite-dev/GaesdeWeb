@@ -1,5 +1,6 @@
 ﻿@namespace GaesdeWeb
 @inherits LayoutComponentBase
+@inject SessionService Session
 
 <div class="app-shell">
 	<aside class="sidebar" aria-label="Navegação principal">
@@ -9,8 +10,13 @@
 		</a>
 
 		<nav class="sidebar-nav">
-			<a class="nav-link active" href="/"><span class="nav-icon">⌂</span> Início</a>
-			<a class="nav-link" href="#"><span class="nav-icon">▣</span> Meus cursos</a>
+			<NavLink class="nav-link" href="/" Match="NavLinkMatch.All"><span class="nav-icon">⌂</span> Início</NavLink>
+			<NavLink class="nav-link" href="/categories"><span class="nav-icon category-icon" aria-hidden="true">▦</span> Categorias</NavLink>
+			<NavLink class="nav-link" href="/courses"><span class="nav-icon" aria-hidden="true">▣</span> Cursos</NavLink>
+			@if (CanManageUsers)
+			{
+				<NavLink class="nav-link" href="/users"><span class="nav-icon" aria-hidden="true">♙</span> Usuários</NavLink>
+			}
 		</nav>
 	</aside>
 
@@ -18,3 +24,17 @@
 		@Body
 	</div>
 </div>
+
+@code {
+	private SessionData? sessionData;
+	private bool CanManageUsers => sessionData?.CanManageUsers == true;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (!firstRender)
+			return;
+
+		sessionData = await Session.GetAsync();
+		await InvokeAsync(StateHasChanged);
+	}
+}

@@ -12,6 +12,9 @@ builder.Services.AddHttpClient<ApiService>(client =>
 });
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 

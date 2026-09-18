@@ -47,13 +47,32 @@ public sealed class AuthService
             payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
             using var document = JsonDocument.Parse(Encoding.UTF8.GetString(Convert.FromBase64String(payload)));
             var root = document.RootElement;
+            var accessLevel = ReadClaim(root, "nivel_acesso", "accessLevel", "access_level");
+            var role = ReadClaim(root, "role", "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
             return (
-                root.TryGetProperty("nivel_acesso", out var level) ? level.GetString() ?? "-" : "-",
-                root.TryGetProperty("role", out var role) ? role.GetString() ?? "Usuário" : "Usuário");
+                accessLevel,
+                string.IsNullOrWhiteSpace(role) ? "Usuário" : role);
         }
         catch
         {
             return ("-", "Usuário");
         }
+    }
+
+    private static string ReadClaim(JsonElement root, params string[] names)
+    {
+        foreach (var name in names)
+        {
+            if (!root.TryGetProperty(name, out var claim))
+                continue;
+
+            if (claim.ValueKind == JsonValueKind.String)
+                return claim.GetString() ?? "-";
+
+            if (claim.ValueKind == JsonValueKind.Number)
+                return claim.ToString();
+        }
+
+        return "-";
     }
 }
