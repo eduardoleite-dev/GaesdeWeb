@@ -1,5 +1,5 @@
 param(
-    [string]$ResourceGroup = "GaesdeWeb_group",
+    [string]$ResourceGroup = "gaesde_group",
     [string]$AppName = "gaesdeweb"
 )
 

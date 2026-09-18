@@ -1,0 +1,6 @@
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\publish\appsettings.Development.json
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\publish\appsettings.json
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\publish\GaesdeWeb.dll
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\publish\GaesdeWeb.runtimeconfig.json
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\publish\GaesdeWeb.pdb
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\publish\GaesdeWeb.deps.json
