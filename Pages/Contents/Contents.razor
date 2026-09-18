@@ -1,0 +1,76 @@
+@page "/contents"
+@layout MainLayout
+@inherits ContentsPage
+@using GaesdeWeb.Pages.Contents.Components
+
+<PageTitle>Conteúdos | GAESDE</PageTitle>
+
+<main class="contents-page">
+    <section class="contents-toolbar"><div><p class="eyebrow">MATERIAL DE APRENDIZAGEM</p><h1>Conteúdos</h1><p>Adicione aulas, textos, PDFs e atividades aos módulos.</p></div>@if (CanManageContents && !string.IsNullOrWhiteSpace(selectedModuleId)){<button class="crud-button" @onclick="OpenCreateForm"><span>+</span> Adicionar conteúdo</button>}</section>
+    <section class="content-filters"><label for="content-module">Módulo</label><select id="content-module" value="@selectedModuleId" @onchange="SelectModuleAsync" disabled="@loading"><option value="">Selecione um módulo</option>@foreach (var module in Modules){<option value="@module.Id">@module.Title</option>}</select><form @onsubmit="SearchAsync" @onsubmit:preventDefault><label for="content-search">Buscar conteúdo</label><input id="content-search" @bind="search" placeholder="Buscar por título..." disabled="@loading" /><button class="search-button" type="submit" aria-label="Buscar conteúdo">⌕</button></form></section>
+
+    @if (showForm)
+    {
+        <section class="content-form-panel"><p class="eyebrow">@(editingId is null ? "NOVO CONTEÚDO" : "EDITAR CONTEÚDO")</p><h2>@(editingId is null ? "Adicionar conteúdo" : "Editar conteúdo")</h2><form class="content-form" @onsubmit="SaveAsync" @onsubmit:preventDefault>
+            <div class="form-field wide"><label for="content-title">Título</label><input id="content-title" @bind="title" placeholder="Ex.: Aula introdutória" disabled="@saving" /></div>
+            <div class="form-field"><label for="content-type">Tipo</label><select id="content-type" value="@type" @onchange="TypeChanged" disabled="@saving"><option value="Video">Vídeo</option><option value="Text">Texto</option><option value="Pdf">PDF</option><option value="Quiz">Quiz</option><option value="Assignment">Atividade</option></select></div>
+            <div class="form-field"><label for="content-order">Ordem</label><input id="content-order" type="number" min="0" @bind="orderIndex" disabled="@saving" /></div>
+            @if (type == "Video")
+            {
+                <div class="form-field"><label for="content-duration">Duração (segundos)</label><input id="content-duration" type="number" min="0" @bind="durationSeconds" disabled="@saving" /></div>
+            }
+            <div class="form-field check-field"><label><input type="checkbox" @bind="isFreePreview" disabled="@saving" /> Prévia gratuita</label></div>
+            @if (type == "Video")
+            {
+                <div class="form-field wide"><label for="content-video">URL do vídeo</label><input id="content-video" @bind="videoUrl" placeholder="Obrigatório para vídeo" disabled="@saving" /></div>
+            }
+            else if (type == "Text")
+            {
+                <div class="form-field wide"><label for="content-body">Texto</label><textarea id="content-body" rows="4" @bind="body" placeholder="Obrigatório para texto" disabled="@saving"></textarea></div>
+            }
+            else if (type == "Pdf")
+            {
+                <div class="form-field wide"><label for="content-file">Arquivo PDF</label><InputFile id="content-file" OnChange="SelectPdf" accept="application/pdf" disabled="@saving" />@if (!string.IsNullOrWhiteSpace(selectedPdfName)){<small>@selectedPdfName</small>}</div>
+            }
+            <div class="form-field wide"><label for="content-photo">Imagem do conteúdo</label><InputFile id="content-photo" OnChange="SelectPhoto" accept="image/jpeg,image/png,image/webp,image/gif" disabled="@saving" />@if (!string.IsNullOrWhiteSpace(selectedPhotoName)){<small>@selectedPhotoName</small>}</div>
+            <div class="content-form-actions"><button class="crud-button" type="submit" disabled="@saving">@(saving ? "Salvando..." : "Salvar conteúdo")</button><button class="plain-button" type="button" @onclick="CloseForm" disabled="@saving">Cancelar</button></div>@if (!string.IsNullOrWhiteSpace(formMessage)){<p class="error wide" role="alert">@formMessage</p>}
+        </form></section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage)){<p class="error" role="alert">@errorMessage</p>}
+    else if (loading && Contents.Count == 0){<p class="content-status">Carregando conteúdos...</p>}
+    else if (string.IsNullOrWhiteSpace(selectedModuleId)){<section class="content-empty"><h2>Selecione um módulo</h2><p>Escolha um módulo para visualizar seus conteúdos.</p></section>}
+    else if (Contents.Count == 0){<section class="content-empty"><h2>Nenhum conteúdo encontrado</h2><p>Adicione a primeira aula ou atividade deste módulo.</p></section>}
+    else {<section class="content-list"><div class="content-list-header"><span>Ordem</span><span>Conteúdo</span><span>Tipo</span><span>Ações</span></div>@foreach (var content in Contents){<div class="content-row"><span class="order-badge">@(content.OrderIndex + 1)</span><div class="content-title"><strong>@content.Title</strong><small>@ModuleName(content.ModuleId)</small></div><span class="type-badge">@content.Type</span><div class="content-actions">@if (content.Type == "Quiz"){<button class="plain-button quiz-action" @onclick="() => OpenQuizPanelAsync(content)">Abrir prova</button>}<button class="plain-button" @onclick="() => OpenEditForm(content)">Editar</button><button class="plain-button danger" @onclick="() => DeleteAsync(content)">Excluir</button></div></div>}</section><nav class="content-pagination"><button class="pagination-button" @onclick="PreviousPageAsync" disabled="@(loading || Page <= 1)">← Anterior</button><span>Página <strong>@Page</strong> de @TotalPages</span><button class="pagination-button" @onclick="NextPageAsync" disabled="@(loading || Page >= TotalPages)">Próxima →</button></nav>}
+
+    @if (selectedQuizContentId is not null)
+    {
+        <QuizBuilder
+            ContentTitle="@Contents.FirstOrDefault(content => content.Id == selectedQuizContentId)?.Title"
+            Quiz="@selectedQuiz"
+            Questions="@QuizQuestions"
+            Options="@QuestionOptions"
+            SelectedQuestionId="@selectedQuestionId"
+            OnConfigureQuiz="OpenQuizForm"
+            OnAddQuestion="() => OpenQuestionForm()"
+            OnSelectQuestion="SelectQuestionAsync"
+            OnEditQuestion="OpenQuestionForm"
+            OnDeleteQuestion="DeleteQuestionAsync"
+            OnAddOption="() => OpenOptionForm()"
+            OnEditOption="OpenOptionForm"
+            OnDeleteOption="DeleteOptionAsync" />
+    }
+
+    @if (showQuizForm)
+    {
+        <section class="editor-panel"><h2>Configurar teste</h2><form @onsubmit="SaveQuizAsync" @onsubmit:preventDefault><label>Nota mínima (%)<input type="number" min="0" max="100" step=".1" @bind="passingScore" /></label><label>Tentativas<input type="number" min="1" @bind="attempts" /></label><label>Tempo (minutos)<input type="number" min="1" @bind="timeLimit" /></label><label class="check-field"><input type="checkbox" @bind="shuffle" /> Embaralhar questões</label><button class="crud-button" type="submit">Salvar configuração</button><button class="plain-button" type="button" @onclick="CloseQuizForms">Cancelar</button></form>@if(formMessage is not null){<p class="error">@formMessage</p>}</section>
+    }
+    @if (showQuestionForm)
+    {
+        <section class="editor-panel"><h2>Adicionar questão</h2><form @onsubmit="SaveQuestionAsync" @onsubmit:preventDefault><label>Tipo<select @bind="questionType"><option value="MultipleChoice">Múltipla escolha</option><option value="TrueFalse">Verdadeiro ou falso</option><option value="Essay">Dissertativa</option><option value="Matching">Associação</option></select></label><label>Texto<textarea rows="3" @bind="questionText"></textarea></label><label>Pontos<input type="number" min="0" step=".1" @bind="questionPoints" /></label><label>Ordem<input type="number" min="0" @bind="questionOrder" /></label><button class="crud-button" type="submit">Salvar questão</button><button class="plain-button" type="button" @onclick="CloseQuizForms">Cancelar</button></form>@if(formMessage is not null){<p class="error">@formMessage</p>}</section>
+    }
+    @if (showOptionForm)
+    {
+        <section class="editor-panel"><h2>Adicionar opção de resposta</h2><form @onsubmit="SaveOptionAsync" @onsubmit:preventDefault><label>Texto da opção<input @bind="optionText" /></label><label class="check-field"><input type="checkbox" @bind="optionCorrect" /> Resposta correta</label><button class="crud-button" type="submit">Salvar opção</button><button class="plain-button" type="button" @onclick="CloseQuizForms">Cancelar</button></form>@if(formMessage is not null){<p class="error">@formMessage</p>}</section>
+    }
+</main>

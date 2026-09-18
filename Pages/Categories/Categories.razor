@@ -1,6 +1,7 @@
 @page "/categories"
 @layout MainLayout
 @inherits CategoriesPage
+@using GaesdeWeb.Pages.Categories.Components
 
 <PageTitle>Categorias | GAESDE</PageTitle>
 
@@ -25,30 +26,15 @@
 
     @if (showForm)
     {
-        <section class="category-form-panel">
-            <div>
-                <p class="eyebrow">@(editingId is null ? "NOVA CATEGORIA" : "EDITAR CATEGORIA")</p>
-                <h2>@(editingId is null ? "Adicionar categoria" : "Editar categoria")</h2>
-            </div>
-            <form @onsubmit="SaveAsync" @onsubmit:preventDefault>
-                <label for="category-name">Nome</label>
-                <div class="category-form-row">
-                    <input id="category-name" @bind="categoryName" placeholder="Ex.: Matemática" disabled="@saving" />
-                    <button class="button primary" type="submit" disabled="@saving">@(saving ? "Salvando..." : "Salvar")</button>
-                    <button class="button secondary" type="button" @onclick="CloseForm" disabled="@saving">Cancelar</button>
-                </div>
-                <label for="category-image">Imagem da categoria</label>
-                <InputFile id="category-image" OnChange="SelectImage" accept="image/jpeg,image/png,image/webp,image/gif" disabled="@saving" />
-                @if (!string.IsNullOrWhiteSpace(selectedImageName))
-                {
-                    <small class="selected-file">@selectedImageName</small>
-                }
-                @if (!string.IsNullOrWhiteSpace(formMessage))
-                {
-                    <p class="error" role="alert">@formMessage</p>
-                }
-            </form>
-        </section>
+        <CategoryForm
+            IsEditing="@(editingId is not null)"
+            @bind-CategoryName="categoryName"
+            Saving="@saving"
+            SelectedImageName="@selectedImageName"
+            FormMessage="@formMessage"
+            OnSave="SaveAsync"
+            OnCancel="CloseForm"
+            OnImageChanged="SelectImage" />
     }
 
     @if (!string.IsNullOrWhiteSpace(errorMessage))

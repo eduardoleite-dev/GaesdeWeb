@@ -14,6 +14,11 @@ builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<ModuleService>();
+builder.Services.AddScoped<ContentService>();
+builder.Services.AddScoped<QuizService>();
+builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<QuestionOptionService>();
 builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();

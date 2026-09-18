@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Components.Forms
+
+<section class="category-form-panel">
+    <div>
+        <p class="eyebrow">@(IsEditing ? "EDITAR CATEGORIA" : "NOVA CATEGORIA")</p>
+        <h2>@(IsEditing ? "Editar categoria" : "Adicionar categoria")</h2>
+    </div>
+
+    <form @onsubmit="OnSave" @onsubmit:preventDefault>
+        <label for="category-name">Nome</label>
+        <div class="category-form-row">
+            <input id="category-name" @bind="CategoryName" placeholder="Ex.: Matemática" disabled="@Saving" />
+            <button class="button primary" type="submit" disabled="@Saving">@(Saving ? "Salvando..." : "Salvar")</button>
+            <button class="button secondary" type="button" @onclick="OnCancel" disabled="@Saving">Cancelar</button>
+        </div>
+
+        <label for="category-image">Imagem da categoria</label>
+        <InputFile id="category-image" OnChange="OnImageChanged" accept="image/jpeg,image/png,image/webp,image/gif" disabled="@Saving" />
+        @if (!string.IsNullOrWhiteSpace(SelectedImageName))
+        {
+            <small class="selected-file">@SelectedImageName</small>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(FormMessage))
+        {
+            <p class="error" role="alert">@FormMessage</p>
+        }
+    </form>
+</section>
+
+@code {
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public string CategoryName { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> CategoryNameChanged { get; set; }
+    [Parameter] public bool Saving { get; set; }
+    [Parameter] public string? SelectedImageName { get; set; }
+    [Parameter] public string? FormMessage { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback<InputFileChangeEventArgs> OnImageChanged { get; set; }
+}

@@ -1,0 +1,84 @@
+@using GaesdeWeb.Models
+
+<section class="quiz-builder-panel">
+    <div class="quiz-builder-heading">
+        <div>
+            <span class="eyebrow">CONSTRUÇÃO DA PROVA</span>
+            <h2>@ContentTitle</h2>
+            <p>Configure a prova e monte as questões para seus alunos.</p>
+        </div>
+        <button class="plain-button" @onclick="OnConfigureQuiz">
+            @(Quiz is null ? "Configurar quiz" : "Editar configuração")
+        </button>
+    </div>
+
+    @if (Quiz is null)
+    {
+        <p class="quiz-builder-empty">Comece configurando nota, tentativas e tempo da prova.</p>
+    }
+    else
+    {
+        <div class="quiz-meta">
+            <span>Nota mínima: <strong>@Quiz.PassingScorePercentage%</strong></span>
+            <span>Tentativas: <strong>@Quiz.AttemptsAllowed</strong></span>
+            <span>Questões: <strong>@Questions.Count</strong></span>
+        </div>
+
+        <div class="quiz-questions-heading">
+            <h3>Questões da prova</h3>
+            <button class="crud-button" @onclick="OnAddQuestion">+ Adicionar questão</button>
+        </div>
+
+        @foreach (var question in Questions)
+        {
+            <article class="quiz-question-row">
+                <div>
+                    <strong>@(question.OrderIndex + 1). @question.QuestionText</strong>
+                    <small>@question.Type · @question.Points pontos</small>
+                </div>
+                <div class="content-actions">
+                    <button class="plain-button" @onclick="() => OnSelectQuestion.InvokeAsync(question)">
+                        @(SelectedQuestionId == question.Id ? "Ocultar opções" : "Opções")
+                    </button>
+                    <button class="plain-button" @onclick="() => OnEditQuestion.InvokeAsync(question)">Editar</button>
+                    <button class="plain-button danger" @onclick="() => OnDeleteQuestion.InvokeAsync(question)">Excluir</button>
+                </div>
+            </article>
+
+            @if (SelectedQuestionId == question.Id)
+            {
+                <div class="answer-options">
+                    <div class="quiz-questions-heading">
+                        <h4>Opções de resposta</h4>
+                        <button class="plain-button" @onclick="OnAddOption">+ Adicionar opção</button>
+                    </div>
+                    @foreach (var option in Options)
+                    {
+                        <div class="option-row">
+                            <span class="correct-mark">@(option.IsCorrect ? "✓" : "○")</span>
+                            <span>@option.OptionText</span>
+                            <button class="plain-button" @onclick="() => OnEditOption.InvokeAsync(option)">Editar</button>
+                            <button class="plain-button danger" @onclick="() => OnDeleteOption.InvokeAsync(option)">Excluir</button>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    }
+</section>
+
+@code {
+    [Parameter] public string ContentTitle { get; set; } = string.Empty;
+    [Parameter] public QuizResponseDto? Quiz { get; set; }
+    [Parameter] public IReadOnlyList<QuestionResponseDto> Questions { get; set; } = [];
+    [Parameter] public IReadOnlyList<QuestionOptionResponseDto> Options { get; set; } = [];
+    [Parameter] public string? SelectedQuestionId { get; set; }
+    [Parameter] public EventCallback OnConfigureQuiz { get; set; }
+    [Parameter] public EventCallback OnAddQuestion { get; set; }
+    [Parameter] public EventCallback<QuestionResponseDto> OnSelectQuestion { get; set; }
+    [Parameter] public EventCallback<QuestionResponseDto> OnEditQuestion { get; set; }
+    [Parameter] public EventCallback<QuestionResponseDto> OnDeleteQuestion { get; set; }
+    [Parameter] public EventCallback OnAddOption { get; set; }
+    [Parameter] public EventCallback<QuestionOptionResponseDto> OnEditOption { get; set; }
+    [Parameter] public EventCallback<QuestionOptionResponseDto> OnDeleteOption { get; set; }
+}

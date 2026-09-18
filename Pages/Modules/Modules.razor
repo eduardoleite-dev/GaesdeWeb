@@ -1,0 +1,74 @@
+@page "/modules"
+@layout MainLayout
+@inherits ModulesPage
+
+<PageTitle>Módulos | GAESDE</PageTitle>
+
+<main class="modules-page">
+    <section class="modules-toolbar">
+        <div><p class="eyebrow">ESTRUTURA DO CURSO</p><h1>Módulos</h1><p>Organize o conteúdo de cada curso em etapas de aprendizagem.</p></div>
+        @if (CanManageModules && !string.IsNullOrWhiteSpace(selectedCourseId))
+        {
+            <button class="crud-button" @onclick="OpenCreateForm"><span aria-hidden="true">+</span> Adicionar módulo</button>
+        }
+    </section>
+
+    <section class="module-filters">
+        <label for="module-course">Curso</label>
+        <select id="module-course" value="@selectedCourseId" @onchange="SelectCourseAsync" disabled="@loading">
+            <option value="">Selecione um curso</option>
+            @foreach (var course in Courses)
+            {
+                <option value="@course.Id">@course.Title</option>
+            }
+        </select>
+        <form @onsubmit="SearchAsync" @onsubmit:preventDefault>
+            <label for="module-search">Buscar módulo</label>
+            <input id="module-search" @bind="search" placeholder="Buscar por título..." disabled="@loading" />
+            <button class="search-button" type="submit" aria-label="Buscar módulo" title="Buscar módulo" disabled="@loading">⌕</button>
+        </form>
+    </section>
+
+    @if (showForm)
+    {
+        <section class="module-form-panel">
+            <p class="eyebrow">@(editingId is null ? "NOVO MÓDULO" : "EDITAR MÓDULO")</p>
+            <h2>@(editingId is null ? "Adicionar módulo" : "Editar módulo")</h2>
+            <form class="module-form" @onsubmit="SaveAsync" @onsubmit:preventDefault>
+                <div class="form-field"><label for="module-title">Título</label><input id="module-title" @bind="title" placeholder="Ex.: Fundamentos" disabled="@saving" /></div>
+                <div class="form-field"><label for="module-order">Ordem</label><input id="module-order" type="number" min="0" @bind="orderIndex" disabled="@saving" /></div>
+                <div class="form-field wide"><label for="module-description">Descrição</label><textarea id="module-description" rows="3" @bind="description" placeholder="Descreva esta etapa do curso..." disabled="@saving"></textarea></div>
+                <div class="module-form-actions"><button class="crud-button" type="submit" disabled="@saving">@(saving ? "Salvando..." : "Salvar módulo")</button><button class="plain-button" type="button" @onclick="CloseForm" disabled="@saving">Cancelar</button></div>
+                @if (!string.IsNullOrWhiteSpace(formMessage)){<p class="error wide" role="alert">@formMessage</p>}
+            </form>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p class="error" role="alert">@errorMessage</p>
+    }
+    else if (loading && Modules.Count == 0)
+    {
+        <p class="module-status">Carregando módulos...</p>
+    }
+    else if (string.IsNullOrWhiteSpace(selectedCourseId))
+    {
+        <section class="module-empty"><span aria-hidden="true">▣</span><h2>Selecione um curso</h2><p>Escolha um curso para visualizar e organizar seus módulos.</p></section>
+    }
+    else if (Modules.Count == 0)
+    {
+        <section class="module-empty"><span aria-hidden="true">▣</span><h2>Nenhum módulo encontrado</h2><p>Adicione a primeira etapa deste curso.</p></section>
+    }
+    else
+    {
+        <section class="module-list" aria-live="polite">
+            <div class="module-list-header"><span>Ordem</span><span>Módulo</span><span>Curso</span><span>Ações</span></div>
+            @foreach (var module in Modules)
+            {
+                <div class="module-row"><span class="order-badge">@(module.OrderIndex + 1)</span><div class="module-title"><strong>@module.Title</strong><small>@(module.Description ?? "Sem descrição")</small></div><span class="module-course">@CourseName(module.CourseId)</span><div class="module-actions"><button class="plain-button" @onclick="() => OpenEditForm(module)">Editar</button><button class="plain-button danger" @onclick="() => DeleteAsync(module)">Excluir</button></div></div>
+            }
+        </section>
+        <nav class="module-pagination" aria-label="Paginação de módulos"><button class="pagination-button" @onclick="PreviousPageAsync" disabled="@(loading || Page <= 1)">← Anterior</button><span>Página <strong>@Page</strong> de @TotalPages</span><button class="pagination-button" @onclick="NextPageAsync" disabled="@(loading || Page >= TotalPages)">Próxima →</button></nav>
+    }
+</main>
