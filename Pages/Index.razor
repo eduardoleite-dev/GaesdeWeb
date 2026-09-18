@@ -1,0 +1,51 @@
+﻿@page "/"
+@inherits IndexPage
+
+<PageTitle>Home | GaesdeWeb</PageTitle>
+
+<header class="app-topbar">
+	<button class="menu-button" aria-label="Abrir menu">☰</button>
+	<div class="search-box"><span>⌕</span><input placeholder="Buscar recursos..." aria-label="Buscar recursos" /></div>
+	<div class="account-area">
+		<span class="notification-dot">♧</span>
+		<div class="account-divider"></div>
+		<div class="avatar">@UserInitial</div>
+		<div class="account-copy"><strong>@DisplayName</strong><span>@SessionData?.Role · nível @SessionData?.AccessLevel</span></div>
+		<button class="logout-button" @onclick="LogoutAsync">Sair</button>
+	</div>
+</header>
+
+<main class="dashboard-content">
+	<section class="welcome-banner">
+		<div>
+			<p class="banner-date">Base autenticada · sessão ativa</p>
+			<h1>Olá, @DisplayName! <span>👋</span></h1>
+			<p>Seu ambiente está pronto. Use os cartões abaixo para validar a comunicação com a API.</p>
+		</div>
+		<button class="banner-action" @onclick="LoadPrivateAsync" disabled="@privateLoading || !HasSession">
+			@(privateLoading ? "Consultando..." : "Verificar acesso →")
+		</button>
+	</section>
+
+	<section class="dashboard-cards" aria-live="polite">
+		<article class="dashboard-card card-public">
+			<div class="card-symbol">◎</div>
+			<span class="card-label">ENDPOINT PÚBLICO</span>
+			<h2>Hello World público</h2>
+			<p>@(publicMessage ?? "Nenhuma consulta realizada.")</p>
+			<button class="card-action" @onclick="LoadPublicAsync" disabled="@publicLoading">@(publicLoading ? "Consultando..." : "Consultar endpoint")</button>
+		</article>
+		<article class="dashboard-card card-private">
+			<div class="card-symbol">◆</div>
+			<span class="card-label">ENDPOINT PROTEGIDO</span>
+			<h2>Hello World privado</h2>
+			<p>@(privateMessage ?? "Disponível após autenticação.")</p>
+			<button class="card-action" @onclick="LoadPrivateAsync" disabled="@privateLoading || !HasSession">@(privateLoading ? "Consultando..." : "Consultar com token")</button>
+		</article>
+	</section>
+
+	@if (!HasSession)
+	{
+		<p class="hint">A sessão não foi encontrada. <a href="/login">Entrar novamente</a></p>
+	}
+</main>

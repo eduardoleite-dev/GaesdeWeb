@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "17nGrdmzxOU=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\eduardo.leite\\Documents\\Estudo\\Github\\GaesdeWeb\\GaesdeWeb.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\eduardo.leite\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.9\\microsoft.aspnetcore.app.internal.assets.10.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}
