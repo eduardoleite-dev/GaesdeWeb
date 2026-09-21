@@ -85,10 +85,130 @@
                     </div>
                     <span>@(Categories.FirstOrDefault(category => category.Id == course.CategoryId)?.Name ?? "Sem categoria")</span>
                     <span class="level-badge">@course.Level</span>
-                    <div class="course-actions"><button class="plain-button" @onclick="() => OpenEditForm(course)">Editar</button><button class="plain-button danger" @onclick="() => DeleteAsync(course)">Excluir</button></div>
+                    <div class="course-actions">
+                        @if (CanManageEnrollments)
+                        {
+                            <button class="plain-button enroll-button" @onclick="() => OpenEnrollmentModalAsync(course)">Inscrever aluno</button>
+                        }
+                        <button class="plain-button forum-button" @onclick="() => OpenForumAsync(course)" title="Abrir fórum coletivo do curso">Fórum do curso</button>
+                        <button class="plain-button" @onclick="() => OpenEditForm(course)">Editar</button><button class="plain-button danger" @onclick="() => DeleteAsync(course)">Excluir</button>
+                    </div>
                 </div>
             }
         </section>
         <nav class="course-pagination" aria-label="Paginação de cursos"><button class="pagination-button" @onclick="PreviousPageAsync" disabled="@(loading || Page <= 1)">← Anterior</button><span>Página <strong>@Page</strong> de @TotalPages</span><button class="pagination-button" @onclick="NextPageAsync" disabled="@(loading || Page >= TotalPages)">Próxima →</button></nav>
+    }
+
+    @if (showEnrollmentModal && enrollmentCourse is not null)
+    {
+        <div class="enrollment-overlay" role="presentation">
+            <section class="enrollment-modal" role="dialog" aria-modal="true" aria-labelledby="enrollment-title">
+                <div class="enrollment-modal-heading">
+                    <div>
+                        <p class="eyebrow">INSCRIÇÃO NO CURSO</p>
+                        <h2 id="enrollment-title">@enrollmentCourse.Title</h2>
+                        <p>Selecione um ou mais alunos para criar as matrículas.</p>
+                    </div>
+                    <button class="modal-close" type="button" @onclick="CloseEnrollmentModal" aria-label="Fechar inscrição" title="Fechar">×</button>
+                </div>
+
+                <form class="enrollment-search" @onsubmit="SearchEnrollmentStudentsAsync" @onsubmit:preventDefault>
+                    <label for="enrollment-student-search">Buscar aluno</label>
+                    <input id="enrollment-student-search" @bind="enrollmentSearch" placeholder="Digite o nome do aluno..." disabled="@enrollmentLoading" />
+                    <button class="search-button" type="submit" aria-label="Buscar aluno" title="Buscar aluno" disabled="@enrollmentLoading">⌕</button>
+                </form>
+
+                <div class="enrollment-view-switch" role="tablist" aria-label="Alunos do curso">
+                    <button class="@(showingEnrolledStudents ? "plain-button" : "plain-button active")" type="button" @onclick="() => showingEnrolledStudents = false">Disponíveis</button>
+                    <button class="@(showingEnrolledStudents ? "plain-button active" : "plain-button")" type="button" @onclick="() => showingEnrolledStudents = true">Inscritos (@enrolledStudents.Count)</button>
+                </div>
+
+                @if (enrollmentLoading)
+                {
+                    <p class="course-status">Buscando alunos...</p>
+                }
+                else if (showingEnrolledStudents && enrolledStudents.Count == 0)
+                {
+                    <p class="enrollment-empty">Nenhum aluno inscrito neste curso.</p>
+                }
+                else if (!showingEnrolledStudents && enrollmentStudents.Count == 0)
+                {
+                    <p class="enrollment-empty">Nenhum aluno disponível encontrado para essa busca.</p>
+                }
+                else
+                {
+                    <div class="student-selection-list">
+                        @foreach (var student in (showingEnrolledStudents ? enrolledStudents : enrollmentStudents))
+                        {
+                            <label class="student-selection-row @(showingEnrolledStudents ? "enrolled" : string.Empty)">
+                                @if (!showingEnrolledStudents)
+                                {
+                                    <input type="checkbox" checked="@selectedStudentIds.Contains(student.Id)" @onclick="() => ToggleStudent(student.Id)" />
+                                }
+                                <span><strong>@student.Name</strong><small>@student.Email</small></span>
+                            </label>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(enrollmentMessage))
+                {
+                    <p class="enrollment-message" role="status">@enrollmentMessage</p>
+                }
+                <div class="enrollment-modal-footer">
+                    <span>@(showingEnrolledStudents ? $"{enrolledStudents.Count} inscrito(s)" : $"{selectedStudentIds.Count} selecionado(s)")</span>
+                    <div class="form-actions"><button class="plain-button" type="button" @onclick="CloseEnrollmentModal" disabled="@enrolling">Cancelar</button><button class="crud-button" type="button" @onclick="EnrollSelectedStudentsAsync" disabled="@(enrolling || selectedStudentIds.Count == 0)">@(enrolling ? "Inscrevendo..." : "Inscrever selecionados")</button></div>
+                </div>
+            </section>
+        </div>
+    }
+
+    @if (showForumModal && forumCourse is not null)
+    {
+        <div class="enrollment-overlay" role="presentation">
+            <section class="enrollment-modal forum-modal" role="dialog" aria-modal="true" aria-labelledby="forum-title">
+                <div class="forum-banner">
+                    <div class="forum-banner-icon" aria-hidden="true">#</div>
+                    <div>
+                        <p class="eyebrow">DISCUSSÃO DA TURMA</p>
+                        <h2 id="forum-title">@forumCourse.Title</h2>
+                        <p>Fórum coletivo para dúvidas, avisos e respostas da turma.</p>
+                    </div>
+                    <button class="modal-close" type="button" @onclick="CloseForum" aria-label="Fechar fórum" title="Fechar">×</button>
+                </div>
+
+                <form class="forum-composer" @onsubmit="PublishForumMessageAsync" @onsubmit:preventDefault>
+                    <label for="forum-content">Começar uma discussão</label>
+                    <textarea id="forum-content" @bind="forumContent" rows="3" placeholder="Compartilhe uma dúvida, ideia ou aviso com a turma..." disabled="@forumPosting"></textarea>
+                    <div class="forum-composer-actions"><span>Visível para todos os participantes</span><button class="crud-button" type="submit" disabled="@forumPosting">@(forumPosting ? "Publicando..." : "Publicar discussão")</button></div>
+                </form>
+
+                @if (!string.IsNullOrWhiteSpace(forumMessage))
+                {
+                    <p class="enrollment-message" role="status">@forumMessage</p>
+                }
+                @if (forumLoading)
+                {
+                    <p class="course-status">Carregando mensagens...</p>
+                }
+                else if (forumComments.Count == 0)
+                {
+                    <p class="enrollment-empty">Ainda não há mensagens. Seja o primeiro a publicar.</p>
+                }
+                else
+                {
+                    <div class="forum-message-list">
+                        @foreach (var comment in forumComments)
+                        {
+                            <article class="forum-message">
+                                <div class="forum-message-meta"><span class="forum-avatar">@CommentAuthor(comment).FirstOrDefault()</span><div><strong>@CommentAuthor(comment)</strong><time>@CommentDate(comment)</time></div></div>
+                                <p>@CommentText(comment)</p>
+                                <button class="forum-reply" type="button">Responder</button>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
     }
 </main>

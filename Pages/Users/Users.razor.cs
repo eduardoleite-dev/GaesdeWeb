@@ -24,7 +24,7 @@ public partial class UsersPage : ComponentBase
     protected string name = string.Empty;
     protected string email = string.Empty;
     protected string password = string.Empty;
-    protected int accessLevel = 3;
+    protected AccessLevel accessLevel = AccessLevel.Student;
     protected string avatarUrl = string.Empty;
     protected string bio = string.Empty;
     protected int Page { get; private set; } = 1;
@@ -51,7 +51,7 @@ public partial class UsersPage : ComponentBase
         name = string.Empty;
         email = string.Empty;
         password = string.Empty;
-        accessLevel = 3;
+        accessLevel = AccessLevel.Student;
         avatarUrl = string.Empty;
         selectedAvatar = null;
         selectedAvatarName = null;
@@ -190,12 +190,12 @@ public partial class UsersPage : ComponentBase
         await LoadUsersAsync();
     }
 
-    protected static string AccessLevelName(int value) => value switch
+    protected static string AccessLevelName(AccessLevel value) => value switch
     {
-        0 => "Administrador",
-        2 => "Professor",
-        3 => "Aluno",
-        4 => "Vendedor",
+        AccessLevel.Administrator => "Administrador",
+        AccessLevel.Professor => "Professor",
+        AccessLevel.Student => "Aluno",
+        AccessLevel.Seller => "Vendedor",
         _ => "Desconhecido"
     };
 

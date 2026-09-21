@@ -35,19 +35,19 @@ public sealed class AuthService
         return true;
     }
 
-    private static (string AccessLevel, string Role) ReadClaims(string token)
+    private static (AccessLevel AccessLevel, string Role) ReadClaims(string token)
     {
         try
         {
             var parts = token.Split('.');
             if (parts.Length < 2)
-                return ("-", "Usuário");
+                return (AccessLevel.Unknown, "Usuário");
 
             var payload = parts[1].Replace('-', '+').Replace('_', '/');
             payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
             using var document = JsonDocument.Parse(Encoding.UTF8.GetString(Convert.FromBase64String(payload)));
             var root = document.RootElement;
-            var accessLevel = ReadClaim(root, "nivel_acesso", "accessLevel", "access_level");
+            var accessLevel = ParseAccessLevel(ReadClaim(root, "nivel_acesso", "accessLevel", "access_level"));
             var role = ReadClaim(root, "role", "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
             return (
                 accessLevel,
@@ -55,8 +55,18 @@ public sealed class AuthService
         }
         catch
         {
-            return ("-", "Usuário");
+            return (AccessLevel.Unknown, "Usuário");
         }
+    }
+
+    private static AccessLevel ParseAccessLevel(string value)
+    {
+        if (int.TryParse(value, out var numericValue) && Enum.IsDefined(typeof(AccessLevel), numericValue))
+            return (AccessLevel)numericValue;
+
+        return Enum.TryParse<AccessLevel>(value, true, out var accessLevel)
+            ? accessLevel
+            : AccessLevel.Unknown;
     }
 
     private static string ReadClaim(JsonElement root, params string[] names)

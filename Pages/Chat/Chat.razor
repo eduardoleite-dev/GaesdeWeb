@@ -1,0 +1,103 @@
+@page "/chat"
+@layout MainLayout
+@inherits ChatPage
+
+<PageTitle>Chat | GAESDE</PageTitle>
+
+<main class="chat-page">
+    <section class="chat-header">
+        <div>
+            <p class="eyebrow">MENSAGENS DIRETAS</p>
+            <h1>Suas conversas</h1>
+            <p>Converse diretamente com professores, alunos e outros usuários.</p>
+        </div>
+        <button class="new-conversation-button" type="button" @onclick="OpenComposer"><span class="new-conversation-icon" aria-hidden="true">+</span><span>Nova conversa</span></button>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p class="error" role="alert">@errorMessage</p>
+    }
+    @if (loading)
+    {
+        <p class="chat-status">Carregando mensagens...</p>
+    }
+    else if (messages.Count == 0)
+    {
+        <section class="chat-empty"><span aria-hidden="true">✉</span><h2>Nenhuma conversa direta</h2><p>Inicie um chat privado com outro usuário. O fórum coletivo fica dentro de cada curso.</p><button class="plain-button" type="button" @onclick="OpenComposer">Nova conversa</button></section>
+    }
+    else if (conversations.Count > 0)
+    {
+        <section class="chat-layout" aria-live="polite">
+            <aside class="conversation-list" aria-label="Suas conversas">
+                <div class="conversation-list-heading"><strong>Conversas</strong><span>@conversations.Count</span></div>
+                @foreach (var conversation in conversations)
+                {
+                    <button class="conversation-item @(selectedConversation?.Id == conversation.Id ? "selected" : string.Empty)" type="button" @onclick="() => SelectConversation(conversation)">
+                        <span class="conversation-avatar">@conversation.Name.FirstOrDefault()</span>
+                        <span class="conversation-summary"><strong>@conversation.Name</strong><small>@MessageText(conversation.LastMessage)</small></span>
+                        <time>@MessageDate(conversation.LastMessage)</time>
+                    </button>
+                }
+            </aside>
+            @if (selectedConversation is not null)
+            {
+                <section class="chat-window">
+                    <header class="chat-window-header"><div class="chat-avatar">@selectedConversation.Name.FirstOrDefault()</div><div><strong>@selectedConversation.Name</strong><small>Conversa direta</small></div><span class="online-dot" title="Conversa ativa"></span></header>
+                    <div class="message-list">
+                        @foreach (var message in selectedConversation.Messages)
+                        {
+                            <article class="chat-message">
+                                <div class="chat-message-heading"><strong>@MessagePerson(message)</strong><time>@MessageDate(message)</time></div>
+                                <p>@MessageText(message)</p>
+                            </article>
+                        }
+                    </div>
+                    <form class="inline-message-composer" @onsubmit="SendInlineMessageAsync" @onsubmit:preventDefault>
+                        <label for="inline-chat-message">Mensagem para @selectedConversation.Name</label>
+                        <input id="inline-chat-message" @bind="inlineMessageContent" placeholder="Escreva uma mensagem..." disabled="@sending" autocomplete="off" />
+                        <button class="send-message-button" type="submit" aria-label="Enviar mensagem para @selectedConversation.Name" title="Enviar mensagem" disabled="@(sending || string.IsNullOrWhiteSpace(inlineMessageContent))"><span aria-hidden="true">↑</span></button>
+                    </form>
+                    <div class="chat-window-footer">Conversa privada entre você e @selectedConversation.Name.</div>
+                </section>
+            }
+        </section>
+    }
+    else
+    {
+        <section class="chat-empty"><span aria-hidden="true">✉</span><h2>Nenhuma conversa direta</h2><p>Inicie um chat privado com outro usuário. O fórum coletivo fica dentro de cada curso.</p><button class="plain-button" type="button" @onclick="OpenComposer">Nova conversa</button></section>
+    }
+
+    @if (showComposer)
+    {
+        <div class="chat-overlay" role="presentation">
+            <section class="chat-composer" role="dialog" aria-modal="true" aria-labelledby="chat-composer-title">
+                <div class="chat-composer-heading"><div><p class="eyebrow">CHAT DIRETO</p><h2 id="chat-composer-title">Enviar mensagem</h2></div><button class="modal-close" type="button" @onclick="CloseComposer" aria-label="Fechar">×</button></div>
+                <form @onsubmit="SendMessageAsync" @onsubmit:preventDefault>
+                    <label for="chat-recipient-search">Destinatário</label>
+                    <div class="recipient-search"><input id="chat-recipient-search" @bind="recipientSearch" placeholder="Buscar usuário..." disabled="@recipientLoading" /><button class="search-button" type="button" @onclick="SearchRecipientsAsync" aria-label="Buscar usuário" title="Buscar usuário" disabled="@recipientLoading">⌕</button></div>
+                    @if (recipientLoading)
+                    {
+                        <p class="chat-status">Buscando usuários...</p>
+                    }
+                    else if (recipients.Count > 0)
+                    {
+                        <div class="recipient-list">
+                            @foreach (var recipient in recipients)
+                            {
+                                <button class="recipient-option @(selectedRecipientId == recipient.Id ? "selected" : string.Empty)" type="button" @onclick="() => SelectRecipient(recipient)"><strong>@recipient.Name</strong><small>@recipient.Email</small></button>
+                            }
+                        </div>
+                    }
+                    <label for="chat-message-content">Mensagem</label>
+                    <textarea id="chat-message-content" @bind="messageContent" rows="4" placeholder="Escreva sua mensagem..." disabled="@sending"></textarea>
+                    @if (!string.IsNullOrWhiteSpace(composerMessage))
+                    {
+                        <p class="enrollment-message" role="status">@composerMessage</p>
+                    }
+                    <div class="chat-composer-actions"><button class="plain-button" type="button" @onclick="CloseComposer" disabled="@sending">Cancelar</button><button class="crud-button" type="submit" disabled="@(sending || string.IsNullOrWhiteSpace(selectedRecipientId) || string.IsNullOrWhiteSpace(messageContent))">@(sending ? "Enviando..." : "Enviar mensagem")</button></div>
+                </form>
+            </section>
+        </div>
+    }
+</main>

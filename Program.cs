@@ -20,6 +20,11 @@ builder.Services.AddScoped<QuizService>();
 builder.Services.AddScoped<QuestionService>();
 builder.Services.AddScoped<QuestionOptionService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<EnrollmentService>();
+builder.Services.AddScoped<AssignmentSubmissionService>();
+builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<ContentCompletionService>();
+builder.Services.AddScoped<QuizAttemptService>();
 
 var app = builder.Build();
 

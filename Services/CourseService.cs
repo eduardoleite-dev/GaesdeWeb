@@ -25,6 +25,14 @@ public sealed class CourseService
         return ReadPage(payload, page, pageSize);
     }
 
+    public async Task<CourseResponseDto?> GetByIdAsync(string token, string id)
+    {
+        using var response = await SendAsync(HttpMethod.Get, $"api/Courses/{Uri.EscapeDataString(id)}", token);
+        if (!response.IsSuccessStatusCode)
+            return null;
+        return await response.Content.ReadFromJsonAsync<CourseResponseDto>();
+    }
+
     public async Task<CourseResponseDto?> CreateAsync(string token, CourseRequestDto course)
     {
         using var response = await SendJsonAsync(HttpMethod.Post, "api/Courses", token, course);
@@ -130,13 +138,13 @@ public sealed class CourseService
     {
         if (payload.ValueKind == JsonValueKind.Array)
         {
-            var arrayItems = payload.Deserialize<List<CourseResponseDto>>() ?? [];
+            var arrayItems = payload.Deserialize<List<CourseResponseDto>>(JsonOptions) ?? [];
             return new CoursePageResult(arrayItems, arrayItems.Count, requestedPage, requestedPageSize);
         }
 
         var itemsElement = FindProperty(payload, "items", "data", "results");
         var items = itemsElement.ValueKind == JsonValueKind.Array
-            ? itemsElement.Deserialize<List<CourseResponseDto>>() ?? []
+            ? itemsElement.Deserialize<List<CourseResponseDto>>(JsonOptions) ?? []
             : [];
         var page = ReadInt(payload, requestedPage, "page", "currentPage");
         var pageSize = ReadInt(payload, requestedPageSize, "pageSize", "currentPageSize");
@@ -148,8 +156,9 @@ public sealed class CourseService
     {
         foreach (var name in names)
         {
-            if (element.TryGetProperty(name, out var property))
-                return property;
+            foreach (var property in element.EnumerateObject())
+                if (string.Equals(property.Name, name, StringComparison.OrdinalIgnoreCase))
+                    return property.Value;
         }
 
         return default;
@@ -160,4 +169,9 @@ public sealed class CourseService
         var property = FindProperty(element, names);
         return property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out var value) ? value : fallback;
     }
+
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        PropertyNameCaseInsensitive = true
+    };
 }

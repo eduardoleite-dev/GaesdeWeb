@@ -11,13 +11,25 @@
 
 		<nav class="sidebar-nav">
 			<NavLink class="nav-link" href="/" Match="NavLinkMatch.All"><span class="nav-icon">⌂</span> Início</NavLink>
-			<NavLink class="nav-link" href="/categories"><span class="nav-icon category-icon" aria-hidden="true">▦</span> Categorias</NavLink>
-			<NavLink class="nav-link" href="/courses"><span class="nav-icon" aria-hidden="true">▣</span> Cursos</NavLink>
-			<NavLink class="nav-link" href="/modules"><span class="nav-icon" aria-hidden="true">☷</span> Módulos</NavLink>
-			<NavLink class="nav-link" href="/contents"><span class="nav-icon" aria-hidden="true">▤</span> Conteúdos</NavLink>
+			@if (IsStudent)
+			{
+				<NavLink class="nav-link" href="/progress"><span class="nav-icon" aria-hidden="true">◔</span> Meu progresso</NavLink>
+			}
+			else
+			{
+				<NavLink class="nav-link" href="/categories"><span class="nav-icon category-icon" aria-hidden="true">▦</span> Categorias</NavLink>
+				<NavLink class="nav-link" href="/courses"><span class="nav-icon" aria-hidden="true">▣</span> Cursos</NavLink>
+				<NavLink class="nav-link" href="/modules"><span class="nav-icon" aria-hidden="true">☷</span> Módulos</NavLink>
+				<NavLink class="nav-link" href="/contents"><span class="nav-icon" aria-hidden="true">▤</span> Conteúdos</NavLink>
+			}
+			<NavLink class="nav-link" href="/chat"><span class="nav-icon" aria-hidden="true">✉</span> Chat</NavLink>
 			@if (CanManageUsers)
 			{
 				<NavLink class="nav-link" href="/users"><span class="nav-icon" aria-hidden="true">♙</span> Usuários</NavLink>
+			}
+			@if (CanManageStudents)
+			{
+				<NavLink class="nav-link" href="/students"><span class="nav-icon" aria-hidden="true">♙</span> Alunos</NavLink>
 			}
 		</nav>
 	</aside>
@@ -30,6 +42,8 @@
 @code {
 	private SessionData? sessionData;
 	private bool CanManageUsers => sessionData?.CanManageUsers == true;
+	private bool CanManageStudents => sessionData?.CanManageStudents == true;
+	private bool IsStudent => sessionData?.AccessLevel == AccessLevel.Student;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{

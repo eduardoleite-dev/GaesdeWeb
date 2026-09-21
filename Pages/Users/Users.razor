@@ -22,7 +22,7 @@
                 <div class="form-field"><label for="user-name">Nome</label><input id="user-name" @bind="name" placeholder="Nome completo" disabled="@saving" /></div>
                 <div class="form-field"><label for="user-email">E-mail</label><input id="user-email" type="email" @bind="email" placeholder="usuario@exemplo.com" disabled="@saving" /></div>
                 <div class="form-field"><label for="user-password">Senha @(editingId is null ? "" : "(opcional)")</label><input id="user-password" type="password" @bind="password" placeholder="@(editingId is null ? "Senha inicial" : "Manter senha atual")" disabled="@saving" /></div>
-                <div class="form-field"><label for="user-access">Nível de acesso</label><select id="user-access" @bind="accessLevel" disabled="@saving"><option value="0">Administrador</option><option value="2">Professor</option><option value="3">Aluno</option><option value="4">Vendedor</option></select></div>
+                <div class="form-field"><label for="user-access">Nível de acesso</label><select id="user-access" @bind="accessLevel" disabled="@saving"><option value="@((int)AccessLevel.Administrator)">Administrador</option><option value="@((int)AccessLevel.Professor)">Professor</option><option value="@((int)AccessLevel.Student)">Aluno</option><option value="@((int)AccessLevel.Seller)">Vendedor</option></select></div>
                 <div class="form-field wide">
                     <label for="user-avatar">Foto do usuário</label>
                     <InputFile id="user-avatar" OnChange="SelectAvatar" accept="image/jpeg,image/png,image/webp,image/gif" disabled="@saving" />

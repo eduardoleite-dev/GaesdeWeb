@@ -35,6 +35,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = TGF5b3V0c1xNYWluTGF5b3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Contents/Components/QuizBuilder.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGVudHNcQ29tcG9uZW50c1xRdWl6QnVpbGRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -42,6 +46,14 @@ build_metadata.AdditionalFiles.CssScope =
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Categories/Categories.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmllc1xDYXRlZ29yaWVzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-sbw9ntttkn
+
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Categories/Components/CategoryForm.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmllc1xDb21wb25lbnRzXENhdGVnb3J5Rm9ybS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-am07zfx0v4
+
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Contents/Contents.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGVudHNcQ29udGVudHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-ls89k91szp
 
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Courses/Courses.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291cnNlc1xDb3Vyc2VzLnJhem9y
@@ -54,6 +66,10 @@ build_metadata.AdditionalFiles.CssScope = b-1z0yvk0jup
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Login/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW5cTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-ah8s5yprat
+
+[C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Modules/Modules.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlc1xNb2R1bGVzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-oq57zsh3m3
 
 [C:/Users/eduardo.leite/Documents/Estudo/Github/GaesdeWeb/Pages/Users/Users.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlcnNcVXNlcnMucmF6b3I=

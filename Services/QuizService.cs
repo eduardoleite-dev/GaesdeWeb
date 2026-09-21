@@ -34,8 +34,10 @@ public sealed class QuizService
     private static async Task<IReadOnlyList<T>> ReadListAsync<T>(HttpResponseMessage response)
     {
         var payload = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
-        if (payload.ValueKind == System.Text.Json.JsonValueKind.Array) return payload.Deserialize<List<T>>() ?? [];
-        foreach (var name in new[] { "items", "data", "results" }) if (payload.TryGetProperty(name, out var value)) return value.Deserialize<List<T>>() ?? [];
+        if (payload.ValueKind == System.Text.Json.JsonValueKind.Array) return payload.Deserialize<List<T>>(JsonOptions) ?? [];
+        foreach (var property in payload.EnumerateObject()) if (new[] { "items", "data", "results" }.Contains(property.Name, StringComparer.OrdinalIgnoreCase)) return property.Value.Deserialize<List<T>>(JsonOptions) ?? [];
         return [];
     }
+
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web) { PropertyNameCaseInsensitive = true };
 }

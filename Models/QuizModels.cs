@@ -59,3 +59,14 @@ public sealed record QuestionOptionResponseDto(
     [property: JsonPropertyName("questionId")] string QuestionId,
     [property: JsonPropertyName("optionText")] string OptionText,
     [property: JsonPropertyName("isCorrect")] bool IsCorrect);
+
+public sealed record StartQuizAttemptRequestDto(
+    [property: JsonPropertyName("quizId")] string QuizId,
+    [property: JsonPropertyName("enrollmentId")] string EnrollmentId);
+
+public sealed record UserAnswerRequestDto(
+    [property: JsonPropertyName("attemptId")] string AttemptId,
+    [property: JsonPropertyName("questionId")] string QuestionId,
+    [property: JsonPropertyName("selectedOptionId")] string? SelectedOptionId = null,
+    [property: JsonPropertyName("selectedOptionIds")] IReadOnlyList<string>? SelectedOptionIds = null,
+    [property: JsonPropertyName("textResponse")] string? TextResponse = null);

@@ -28,7 +28,7 @@ public sealed record UserOptionDto(
     [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("accessLevel")] int AccessLevel);
+    [property: JsonPropertyName("accessLevel")] AccessLevel AccessLevel);
 
 public sealed record CoursePageResult(
     IReadOnlyList<CourseResponseDto> Items,

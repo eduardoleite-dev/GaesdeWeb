@@ -1,0 +1,11 @@
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\EmbeddedAttribute.cs
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\ValidatableTypeAttribute.cs
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\rpswa.dswa.cache.json
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.AssemblyInfoInputs.cache
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.AssemblyInfo.cs
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.csproj.CoreCompileInputs.cache
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.RazorAssemblyInfo.cache
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.RazorAssemblyInfo.cs
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\verify-student-area-obj\GaesdeWeb.sourcelink.json

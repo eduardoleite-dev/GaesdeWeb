@@ -8,16 +8,18 @@ namespace GaesdeWeb.Services;
 
 public sealed class UserService
 {
-    private const int ProfessorAccessLevel = 2;
+    private const AccessLevel ProfessorAccessLevel = AccessLevel.Professor;
     private readonly ApiService api;
 
     public UserService(ApiService api) => this.api = api;
 
-    public async Task<UserPageResult> GetAllAsync(string token, int page = 1, int pageSize = 10, string? search = null)
+    public async Task<UserPageResult> GetAllAsync(string token, int page = 1, int pageSize = 10, string? search = null, AccessLevel? accessLevel = null)
     {
         var query = $"api/Users?Page={page}&PageSize={pageSize}";
         if (!string.IsNullOrWhiteSpace(search))
             query += $"&search={Uri.EscapeDataString(search.Trim())}";
+        if (accessLevel is not null)
+            query += $"&accessLevel={(int)accessLevel.Value}";
 
         using var response = await SendAsync(HttpMethod.Get, query, token);
         response.EnsureSuccessStatusCode();
@@ -70,7 +72,7 @@ public sealed class UserService
     {
         using var request = new HttpRequestMessage(
             HttpMethod.Get,
-            $"api/Users?Page=1&PageSize=100&accessLevel={ProfessorAccessLevel}");
+            $"api/Users?Page=1&PageSize=100&accessLevel={(int)ProfessorAccessLevel}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         using var response = await api.Client.SendAsync(request);
         response.EnsureSuccessStatusCode();

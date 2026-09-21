@@ -1,0 +1,32 @@
+@page "/progress"
+@layout MainLayout
+@inherits ProgressPage
+
+<PageTitle>Meu progresso | GAESDE</PageTitle>
+
+<main class="progress-page">
+    <header class="learning-header">
+        <div><p class="eyebrow">SUA TRILHA</p><h1>Meu progresso</h1><p>Continue de onde parou e acompanhe seus cursos.</p></div>
+        <div class="learning-summary"><strong>@courses.Count</strong><span>curso(s) em andamento</span></div>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage)) { <p class="error" role="alert">@errorMessage</p> }
+    @if (loading) { <p class="learning-status">Carregando sua trilha...</p> }
+    else if (courses.Count == 0)
+    {
+        <section class="learning-empty"><span aria-hidden="true">◔</span><h2>Nenhum curso encontrado</h2><p>Quando você for matriculado em um curso, ele aparecerá aqui.</p></section>
+    }
+    else
+    {
+        <section class="course-progress-grid">
+            @foreach (var course in courses)
+            {
+                var progress = ProgressFor(course.Id);
+                <article class="progress-course-card">
+                    <div class="progress-course-cover" style="@(string.IsNullOrWhiteSpace(course.CoverImage) ? string.Empty : $"background-image:url('{course.CoverImage}')")"><span>@course.Level</span></div>
+                    <div class="progress-course-body"><p class="course-kicker">@(EnrollmentStatusFor(course.Id) ?? "CURSO")</p><h2>@course.Title</h2><p>@(course.Description ?? "Continue sua jornada de aprendizagem.")</p><div class="progress-track"><span style="width:@progress%"></span></div><div class="progress-course-meta"><span>@progress% concluído</span><button class="continue-button" type="button" @onclick="() => OpenCourse(course.Id)">@(progress > 0 ? "Continuar" : "Começar") <span aria-hidden="true">→</span></button></div></div>
+                </article>
+            }
+        </section>
+    }
+</main>

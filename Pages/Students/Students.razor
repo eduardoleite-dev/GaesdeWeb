@@ -1,0 +1,55 @@
+@page "/students"
+@layout MainLayout
+@inherits StudentsPage
+
+<PageTitle>Alunos | GAESDE</PageTitle>
+
+<main class="students-page">
+    <section class="students-toolbar">
+        <div><p class="eyebrow">GESTÃO DE ALUNOS</p><h1>Alunos</h1><p>Cadastre e acompanhe os alunos dos seus cursos.</p></div>
+        <button class="crud-button" @onclick="OpenCreateForm"><span aria-hidden="true">+</span> Adicionar aluno</button>
+    </section>
+
+    <form class="students-search" @onsubmit="SearchAsync" @onsubmit:preventDefault>
+        <label for="student-search">Buscar aluno</label><span aria-hidden="true">⌕</span><input id="student-search" @bind="search" placeholder="Buscar por nome ou e-mail..." disabled="@loading" /><button class="search-button" type="submit" aria-label="Buscar aluno" title="Buscar aluno" disabled="@loading">⌕</button>
+    </form>
+
+    @if (showForm)
+    {
+        <section class="student-form-panel">
+            <p class="eyebrow">@(editingId is null ? "NOVO ALUNO" : "EDITAR ALUNO")</p><h2>@(editingId is null ? "Adicionar aluno" : "Editar aluno")</h2>
+            <form class="student-form" @onsubmit="SaveAsync" @onsubmit:preventDefault>
+                <div class="form-field"><label for="student-name">Nome</label><input id="student-name" @bind="name" placeholder="Nome completo" disabled="@saving" /></div>
+                <div class="form-field"><label for="student-email">E-mail</label><input id="student-email" type="email" @bind="email" placeholder="aluno@exemplo.com" disabled="@saving" /></div>
+                <div class="form-field"><label for="student-password">Senha @(editingId is null ? "" : "(opcional)")</label><input id="student-password" type="password" @bind="password" placeholder="@(editingId is null ? "Senha inicial" : "Manter senha atual")" disabled="@saving" /></div>
+                <div class="form-field wide"><label for="student-bio">Biografia</label><textarea id="student-bio" @bind="bio" rows="3" placeholder="Uma breve apresentação..." disabled="@saving"></textarea></div>
+                <div class="form-actions"><button class="crud-button" type="submit" disabled="@saving">@(saving ? "Salvando..." : "Salvar aluno")</button><button class="plain-button" type="button" @onclick="CloseForm" disabled="@saving">Cancelar</button></div>
+                @if (!string.IsNullOrWhiteSpace(formMessage)){<p class="error wide" role="alert">@formMessage</p>}
+            </form>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p class="error" role="alert">@errorMessage</p>
+    }
+    else if (loading && Students.Count == 0)
+    {
+        <p class="student-status">Carregando alunos...</p>
+    }
+    else if (Students.Count == 0)
+    {
+        <section class="student-empty"><span aria-hidden="true">◎</span><h2>Nenhum aluno encontrado</h2><p>Adicione um aluno ou ajuste sua busca.</p></section>
+    }
+    else
+    {
+        <section class="student-list" aria-live="polite">
+            <div class="student-list-header"><span>Aluno</span><span>Nível de acesso</span><span>Ações</span></div>
+            @foreach (var student in Students)
+            {
+                <div class="student-row"><div class="student-name"><span class="student-avatar">@(student.Name[..1].ToUpperInvariant())</span><div><strong>@student.Name</strong><small>@student.Email</small></div></div><span class="access-badge">Aluno</span><div class="student-actions"><button class="plain-button" @onclick="() => OpenEditForm(student)">Editar</button><button class="plain-button danger" @onclick="() => DeleteAsync(student)">Excluir</button></div></div>
+            }
+        </section>
+        <nav class="student-pagination" aria-label="Paginação de alunos"><button class="pagination-button" @onclick="PreviousPageAsync" disabled="@(loading || Page <= 1)">← Anterior</button><span>Página <strong>@Page</strong> de @TotalPages</span><button class="pagination-button" @onclick="NextPageAsync" disabled="@(loading || Page >= TotalPages)">Próxima →</button></nav>
+    }
+</main>
