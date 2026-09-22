@@ -29,11 +29,15 @@ C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\rjsmr
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Categories\Categories.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Categories\Components\CategoryForm.razor.rz.scp.css
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Chat\Chat.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Contents\Contents.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Courses\Courses.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Index\Index.razor.rz.scp.css
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Learn\Course.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Login\Login.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Modules\Modules.razor.rz.scp.css
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Progress\Progress.razor.rz.scp.css
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Students\Students.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Users\Users.razor.rz.scp.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\bundle\GaesdeWeb.styles.css
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\projectbundle\GaesdeWeb.bundle.scp.css
@@ -50,9 +54,5 @@ C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\refin
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\GaesdeWeb.pdb
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\GaesdeWeb.genruntimeconfig.cache
 C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\ref\GaesdeWeb.dll
-C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Students\Students.razor.rz.scp.css
-C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Chat\Chat.razor.rz.scp.css
-C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Learn\Course.razor.rz.scp.css
-C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\scopedcss\Pages\Progress\Progress.razor.rz.scp.css
-C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\compressed\t330bkhh4n-{0}-emr2sanesa-emr2sanesa.gz
-C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\compressed\e9mef3m1bw-{0}-emr2sanesa-emr2sanesa.gz
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\compressed\t330bkhh4n-{0}-1trsk6qxlu-1trsk6qxlu.gz
+C:\Users\eduardo.leite\Documents\Estudo\Github\GaesdeWeb\obj\Debug\net10.0\compressed\e9mef3m1bw-{0}-1trsk6qxlu-1trsk6qxlu.gz

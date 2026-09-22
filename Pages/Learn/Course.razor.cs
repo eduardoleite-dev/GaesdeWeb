@@ -2,6 +2,7 @@ using System.Text.Json;
 using GaesdeWeb.Models;
 using GaesdeWeb.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace GaesdeWeb.Pages.Learn;
 
@@ -20,6 +21,9 @@ public partial class CourseLearningPage : ComponentBase
     [Inject] protected QuizAttemptService AttemptsApi { get; set; } = default!;
     [Inject] protected EnrollmentService EnrollmentsApi { get; set; } = default!;
     [Inject] protected NavigationManager Navigation { get; set; } = default!;
+    [Inject] protected IJSRuntime Js { get; set; } = default!;
+
+    private const string QuizReviewStorageKey = "gaesde.quiz-review-available";
 
     protected CourseResponseDto? course;
     protected IReadOnlyList<ModuleResponseDto> modules = [];
@@ -37,11 +41,15 @@ public partial class CourseLearningPage : ComponentBase
     protected bool showQuiz;
     protected bool quizLoading;
     protected bool quizSubmitting;
+    protected bool quizReviewMode;
     protected QuizResponseDto? activeQuiz;
     protected IReadOnlyList<QuestionResponseDto> quizQuestions = [];
+    protected HashSet<string> quizReviewAvailable { get; } = [];
     protected Dictionary<string, IReadOnlyList<QuestionOptionResponseDto>> quizOptions { get; } = [];
     protected Dictionary<string, string> selectedOptions { get; } = [];
     protected Dictionary<string, string> writtenAnswers { get; } = [];
+    protected Dictionary<string, Dictionary<string, string>> quizSubmittedSelections { get; } = [];
+    protected Dictionary<string, Dictionary<string, string>> quizSubmittedWrittenAnswers { get; } = [];
     protected string? attemptId;
     protected string? quizMessage;
     protected int TotalContents => contents.Count;
@@ -85,6 +93,8 @@ public partial class CourseLearningPage : ComponentBase
             var progress = await CompletionsApi.GetCourseProgressAsync(session.Token, CourseId);
             if (progress is { ValueKind: JsonValueKind.Object } && progress.Value.TryGetProperty("completedContentIds", out var completed) && completed.ValueKind == JsonValueKind.Array)
                 foreach (var id in completed.EnumerateArray().Where(item => item.ValueKind == JsonValueKind.String).Select(item => item.GetString()).Where(id => id is not null)) CompletedContentIds.Add(id!);
+
+            await LoadQuizReviewAvailabilityAsync();
         }
         catch (HttpRequestException) { message = "Não foi possível carregar os conteúdos deste curso."; }
         finally
@@ -107,7 +117,7 @@ public partial class CourseLearningPage : ComponentBase
         else message = "Este conteúdo ainda não pode ser concluído. Siga a ordem da trilha.";
     }
 
-    protected async Task TryQuizAsync(QuizResponseDto quiz)
+    protected async Task TryQuizAsync(QuizResponseDto quiz, bool clearState = true)
     {
         var session = await Session.GetAsync();
         if (session is null) return;
@@ -121,10 +131,18 @@ public partial class CourseLearningPage : ComponentBase
         activeQuiz = quiz;
         showQuiz = true;
         quizLoading = true;
+        quizReviewMode = false;
         quizMessage = null;
         attemptId = null;
-        selectedOptions.Clear();
-        writtenAnswers.Clear();
+        if (clearState)
+        {
+            selectedOptions.Clear();
+            writtenAnswers.Clear();
+        }
+        else
+        {
+            LoadSubmittedAnswers(quiz.Id);
+        }
         quizOptions.Clear();
         try
         {
@@ -137,15 +155,76 @@ public partial class CourseLearningPage : ComponentBase
         finally { quizLoading = false; }
     }
 
+    protected async Task OpenQuizReviewAsync(QuizResponseDto quiz)
+    {
+        await TryQuizAsync(quiz, clearState: false);
+        quizReviewMode = true;
+    }
+
+    protected void LoadSubmittedAnswers(string quizId)
+    {
+        selectedOptions.Clear();
+        writtenAnswers.Clear();
+
+        if (quizSubmittedSelections.TryGetValue(quizId, out var submittedSelections))
+            foreach (var answer in submittedSelections)
+                selectedOptions[answer.Key] = answer.Value;
+
+        if (quizSubmittedWrittenAnswers.TryGetValue(quizId, out var submittedWrittenAnswers))
+            foreach (var answer in submittedWrittenAnswers)
+                writtenAnswers[answer.Key] = answer.Value;
+    }
+
+    protected async Task SaveSubmittedAnswersAsync(string quizId)
+    {
+        quizSubmittedSelections[quizId] = new Dictionary<string, string>(selectedOptions);
+        quizSubmittedWrittenAnswers[quizId] = new Dictionary<string, string>(writtenAnswers);
+        quizReviewAvailable.Add(quizId);
+        await PersistQuizReviewAvailabilityAsync();
+    }
+
+    protected async Task LoadQuizReviewAvailabilityAsync()
+    {
+        try
+        {
+            var stored = await Js.InvokeAsync<string?>("sessionStorage.getItem", QuizReviewStorageKey);
+            if (string.IsNullOrWhiteSpace(stored))
+                return;
+
+            foreach (var quizId in stored.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                if (!string.IsNullOrWhiteSpace(quizId))
+                    quizReviewAvailable.Add(quizId);
+        }
+        catch
+        {
+            // Ignora falha do armazenamento local da sessão.
+        }
+    }
+
+    protected async Task PersistQuizReviewAvailabilityAsync()
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("sessionStorage.setItem", QuizReviewStorageKey, string.Join(',', quizReviewAvailable));
+        }
+        catch
+        {
+            // Ignora falha do armazenamento local da sessão.
+        }
+    }
+
     protected void CloseQuiz()
     {
         showQuiz = false;
         activeQuiz = null;
         attemptId = null;
+        quizReviewMode = false;
+        quizMessage = null;
     }
 
     protected void SelectOption(string questionId, string optionId) => selectedOptions[questionId] = optionId;
     protected void SetWrittenAnswer(string questionId, ChangeEventArgs args) => writtenAnswers[questionId] = args.Value?.ToString() ?? string.Empty;
+    protected string GetWrittenAnswer(string questionId) => writtenAnswers.TryGetValue(questionId, out var answer) ? answer : string.Empty;
 
     protected async Task SubmitQuizAsync()
     {
@@ -166,7 +245,19 @@ public partial class CourseLearningPage : ComponentBase
                 await AttemptsApi.SendAnswerAsync(session.Token, new UserAnswerRequestDto(attemptId, question.Id, optionId, null, text));
             }
             var result = await AttemptsApi.FinishAsync(session.Token, attemptId);
-            quizMessage = result is null ? "A tentativa foi enviada, mas não foi possível carregar o resultado." : "Tentativa finalizada. Sua pontuação foi calculada pela API.";
+            if (result is not null)
+            {
+                await SaveSubmittedAnswersAsync(activeQuiz.Id);
+                quizMessage = "Respostas enviadas com sucesso. Você pode revisar o seu quiz realizado.";
+                quizReviewMode = false;
+                showQuiz = false;
+                activeQuiz = null;
+                attemptId = null;
+            }
+            else
+            {
+                quizMessage = "A tentativa foi enviada, mas não foi possível carregar o resultado.";
+            }
         }
         catch (HttpRequestException) { quizMessage = "Não foi possível enviar suas respostas."; }
         finally { quizSubmitting = false; }

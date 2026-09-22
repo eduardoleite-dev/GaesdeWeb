@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GaesdeWeb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35726d4042fda7529780de9586e22fcdb82d9b53")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e42bdccdaf2458acf6c69c23446b22d2dffadc82")]
 [assembly: System.Reflection.AssemblyProductAttribute("GaesdeWeb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GaesdeWeb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

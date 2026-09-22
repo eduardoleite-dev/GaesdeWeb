@@ -11,39 +11,242 @@
     }
     else if (course is null)
     {
-        <section class="learning-empty"><h1>Curso não encontrado</h1><p>Não foi possível carregar este curso ou você não possui matrícula ativa.</p><button class="continue-button" @onclick="GoBack">Voltar para meu progresso</button></section>
+        <section class="learning-empty">
+            <h1>Curso não encontrado</h1>
+            <p>Não foi possível carregar este curso ou você não possui matrícula ativa.</p>
+            <button class="continue-button" type="button" @onclick="GoBack">Voltar para meu progresso</button>
+        </section>
     }
     else
     {
         <header class="course-hero">
             <button class="back-link" type="button" @onclick="GoBack">← Meu progresso</button>
-            <div class="course-hero-content"><div><p class="eyebrow">TRILHA DE APRENDIZAGEM</p><h1>@course.Title</h1><p>@course.Description</p></div><button class="forum-open-button" type="button" @onclick="OpenForum"># Fórum do curso</button></div>
-            <div class="course-progress-summary"><div><span>Seu progresso</span><strong>@ProgressPercent%</strong></div><div class="course-progress-bar"><span style="width:@ProgressPercent%"></span></div><small>@CompletedContentIds.Count de @TotalContents conteúdos concluídos</small></div>
+            <div class="course-hero-content">
+                <div>
+                    <p class="eyebrow">TRILHA DE APRENDIZAGEM</p>
+                    <h1>@course.Title</h1>
+                    <p>@course.Description</p>
+                </div>
+                <button class="forum-open-button" type="button" @onclick="OpenForum"># Fórum do curso</button>
+            </div>
+            <div class="course-progress-summary">
+                <div><span>Seu progresso</span><strong>@ProgressPercent%</strong></div>
+                <div class="course-progress-bar"><span style="width:@ProgressPercent%"></span></div>
+                <small>@CompletedContentIds.Count de @TotalContents conteúdos concluídos</small>
+            </div>
         </header>
 
-        @if (!string.IsNullOrWhiteSpace(message)) { <p class="learning-message" role="status">@message</p> }
+        @if (!string.IsNullOrWhiteSpace(message))
+        {
+            <p class="learning-message" role="status">@message</p>
+        }
+
         <section class="module-stack">
             @foreach (var module in modules)
             {
-                var moduleContents = contents.Where(content => content.ModuleId == module.Id).OrderBy(content => content.OrderIndex).ToArray();
-                <details class="learning-module" open="@(module == modules.First())"><summary><span class="module-index">@((modules.ToList().IndexOf(module) + 1).ToString("00"))</span><span class="module-copy"><strong>@module.Title</strong><small>@moduleContents.Length conteúdo(s) @if (!string.IsNullOrWhiteSpace(module.Description)) { <text> · @module.Description</text> }</small></span><span class="module-completion">@moduleContents.Count(content => CompletedContentIds.Contains(content.Id))/@moduleContents.Length</span></summary><div class="content-list">
-                    @foreach (var content in moduleContents)
-                    {
-                        var quiz = quizzes.FirstOrDefault(item => string.Equals(item.ContentId, content.Id, StringComparison.OrdinalIgnoreCase));
-                        <article class="learning-content @(CompletedContentIds.Contains(content.Id) ? "completed" : string.Empty)"><button class="completion-toggle" type="button" @onclick="() => ToggleCompletionAsync(content.Id)" aria-label="@(CompletedContentIds.Contains(content.Id) ? "Desmarcar conclusão" : "Marcar como concluído")">@(CompletedContentIds.Contains(content.Id) ? "✓" : "○")</button><div class="content-copy"><span class="content-type">@ContentLabel(content.Type)</span><h3>@content.Title</h3>@if (!string.IsNullOrWhiteSpace(content.Body)) { <p>@content.Body</p> }<div class="content-links">@if (!string.IsNullOrWhiteSpace(content.VideoUrl)) { <a href="@content.VideoUrl" target="_blank" rel="noopener">Assistir vídeo ↗</a> } @if (!string.IsNullOrWhiteSpace(content.FileUrl)) { <a href="@content.FileUrl" target="_blank" rel="noopener">Abrir material ↗</a> } @if (quiz is not null) { <span class="quiz-chip">Quiz · @quiz.AttemptsAllowed tentativa(s)</span><button class="try-quiz-button" type="button" @onclick="() => TryQuizAsync(quiz)">Tentar responder</button> }</div></div></article>
-                    }
-                </div></details>
+                var moduleContents = contents
+                    .Where(content => content.ModuleId == module.Id)
+                    .OrderBy(content => content.OrderIndex)
+                    .ToArray();
+
+                <details class="learning-module" open="@(module == modules.First())">
+                    <summary>
+                        <span class="module-index">@((modules.ToList().IndexOf(module) + 1).ToString("00"))</span>
+                        <span class="module-copy">
+                            <strong>@module.Title</strong>
+                            <small>
+                                @moduleContents.Length conteúdo(s)
+                                @if (!string.IsNullOrWhiteSpace(module.Description))
+                                {
+                                    <text> · @module.Description</text>
+                                }
+                            </small>
+                        </span>
+                        <span class="module-completion">@moduleContents.Count(content => CompletedContentIds.Contains(content.Id))/@moduleContents.Length</span>
+                    </summary>
+                    <div class="content-list">
+                        @foreach (var content in moduleContents)
+                        {
+                            var quiz = quizzes.FirstOrDefault(item => string.Equals(item.ContentId, content.Id, StringComparison.OrdinalIgnoreCase));
+
+                            <article class="learning-content @(CompletedContentIds.Contains(content.Id) ? "completed" : string.Empty)">
+                                <button class="completion-toggle" type="button" @onclick="() => ToggleCompletionAsync(content.Id)" aria-label="@(CompletedContentIds.Contains(content.Id) ? "Desmarcar conclusão" : "Marcar como concluído")">@(CompletedContentIds.Contains(content.Id) ? "✓" : "○")</button>
+                                <div class="content-copy">
+                                    <span class="content-type">@ContentLabel(content.Type)</span>
+                                    <h3>@content.Title</h3>
+                                    @if (!string.IsNullOrWhiteSpace(content.Body))
+                                    {
+                                        <p>@content.Body</p>
+                                    }
+                                    <div class="content-links">
+                                        @if (!string.IsNullOrWhiteSpace(content.VideoUrl))
+                                        {
+                                            <a href="@content.VideoUrl" target="_blank" rel="noopener">Assistir vídeo ↗</a>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(content.FileUrl))
+                                        {
+                                            <a href="@content.FileUrl" target="_blank" rel="noopener">Abrir material ↗</a>
+                                        }
+                                        @if (quiz is not null)
+                                        {
+                                            <span class="quiz-chip">Quiz · @quiz.AttemptsAllowed tentativa(s)</span>
+                                            <div class="quiz-actions">
+                                                <button class="try-quiz-button" type="button" @onclick="() => TryQuizAsync(quiz)">Tentar responder</button>
+                                                @if (quizReviewAvailable.Contains(quiz.Id))
+                                                {
+                                                    <button class="plain-button quiz-review-button" type="button" @onclick="() => OpenQuizReviewAsync(quiz)">Ver minhas respostas</button>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </details>
             }
         </section>
     }
 
     @if (showForum)
     {
-        <div class="learning-overlay"><section class="learning-forum" role="dialog" aria-modal="true" aria-labelledby="learning-forum-title"><header class="learning-forum-header"><div><p class="eyebrow">FÓRUM DA TURMA</p><h2 id="learning-forum-title">@course?.Title</h2></div><button class="close-learning" type="button" @onclick="CloseForum" aria-label="Fechar fórum">×</button></header><form class="learning-forum-composer" @onsubmit="PublishForumAsync" @onsubmit:preventDefault><textarea @bind="forumContent" rows="3" placeholder="Compartilhe uma dúvida ou ideia..." disabled="@posting"></textarea><button class="forum-open-button" type="submit" disabled="@posting">@(posting ? "Publicando..." : "Publicar no fórum")</button></form>@if (forumLoading) { <p class="learning-status">Carregando discussões...</p> } else if (forumComments.Count == 0) { <p class="forum-no-content">Ainda não há discussões neste curso.</p> } else { <div class="learning-forum-list">@foreach (var comment in forumComments) { <article><strong>@CommentAuthor(comment)</strong><time>@CommentDate(comment)</time><p>@CommentText(comment)</p></article>}</div> }</section></div>
+        <div class="learning-overlay">
+            <section class="learning-forum" role="dialog" aria-modal="true" aria-labelledby="learning-forum-title">
+                <header class="learning-forum-header">
+                    <div>
+                        <p class="eyebrow">FÓRUM DA TURMA</p>
+                        <h2 id="learning-forum-title">@course?.Title</h2>
+                    </div>
+                    <button class="close-learning" type="button" @onclick="CloseForum" aria-label="Fechar fórum">×</button>
+                </header>
+
+                <form class="learning-forum-composer" @onsubmit="PublishForumAsync" @onsubmit:preventDefault>
+                    <textarea @bind="forumContent" rows="3" placeholder="Compartilhe uma dúvida ou ideia..." disabled="@posting"></textarea>
+                    <button class="forum-open-button" type="submit" disabled="@posting">@(posting ? "Publicando..." : "Publicar no fórum")</button>
+                </form>
+
+                @if (forumLoading)
+                {
+                    <p class="learning-status">Carregando discussões...</p>
+                }
+                else if (forumComments.Count == 0)
+                {
+                    <p class="forum-no-content">Ainda não há discussões neste curso.</p>
+                }
+                else
+                {
+                    <div class="learning-forum-list">
+                        @foreach (var comment in forumComments)
+                        {
+                            <article>
+                                <strong>@CommentAuthor(comment)</strong>
+                                <time>@CommentDate(comment)</time>
+                                <p>@CommentText(comment)</p>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
     }
 
     @if (showQuiz && activeQuiz is not null)
     {
-        <div class="learning-overlay"><section class="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-title"><header class="quiz-modal-header"><div><p class="eyebrow">TENTATIVA DE QUIZ</p><h2 id="quiz-title">Responda às questões</h2><p>Leia com atenção. A correção e a pontuação são feitas pela API.</p></div><button class="close-learning" type="button" @onclick="CloseQuiz" aria-label="Fechar quiz">×</button></header>@if (quizLoading) { <p class="learning-status">Carregando perguntas...</p> } else if (quizQuestions.Count == 0) { <p class="forum-no-content">Este quiz ainda não possui perguntas.</p> } else { <div class="quiz-question-list">@foreach (var question in quizQuestions) { <article class="quiz-question"><div class="quiz-question-number">@(quizQuestions.ToList().IndexOf(question) + 1)</div><div class="quiz-question-body"><h3>@question.QuestionText</h3><small>@question.Points ponto(s) · @question.Type</small>@if (quizOptions.TryGetValue(question.Id, out var options) && options.Count > 0) { <div class="quiz-options">@foreach (var option in options) { <button class="quiz-option @(selectedOptions.TryGetValue(question.Id, out var selected) && selected == option.Id ? "selected" : string.Empty)" type="button" @onclick="() => SelectOption(question.Id, option.Id)"><span>@(selectedOptions.TryGetValue(question.Id, out var current) && current == option.Id ? "●" : "○")</span>@option.OptionText</button> }</div> } else { <textarea class="quiz-text-answer" @oninput="args => SetWrittenAnswer(question.Id, args)" placeholder="Digite sua resposta..." rows="3"></textarea> }</div></article> }</div> }@if (!string.IsNullOrWhiteSpace(quizMessage)) { <p class="learning-message" role="status">@quizMessage</p> }<footer class="quiz-modal-footer"><span>@quizQuestions.Count questão(ões)</span><button class="forum-open-button" type="button" @onclick="SubmitQuizAsync" disabled="@(quizSubmitting || quizLoading || quizQuestions.Count == 0)">@(quizSubmitting ? "Enviando..." : "Enviar respostas")</button></footer></section></div>
+        <div class="learning-overlay">
+            <section class="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
+                <header class="quiz-modal-header">
+                    <div>
+                        <p class="eyebrow">@(quizReviewMode ? "CORREÇÃO DO QUIZ" : "TENTATIVA DE QUIZ")</p>
+                        <h2 id="quiz-title">@(quizReviewMode ? "Correção do quiz" : "Responda às questões")</h2>
+                        <p>@(quizReviewMode ? "Veja as respostas corretas e compare com a sua tentativa." : "Leia com atenção. A correção e a pontuação são feitas pela API.")</p>
+                    </div>
+                    <button class="close-learning" type="button" @onclick="CloseQuiz" aria-label="Fechar quiz">×</button>
+                </header>
+
+                @if (quizLoading)
+                {
+                    <p class="learning-status">Carregando perguntas...</p>
+                }
+                else if (quizQuestions.Count == 0)
+                {
+                    <p class="forum-no-content">Este quiz ainda não possui perguntas.</p>
+                }
+                else
+                {
+                    <div class="quiz-question-list">
+                        @foreach (var question in quizQuestions)
+                        {
+                            var questionIndex = quizQuestions.ToList().IndexOf(question) + 1;
+
+                            <article class="quiz-question">
+                                <div class="quiz-question-number">@questionIndex</div>
+                                <div class="quiz-question-body">
+                                    <h3>@question.QuestionText</h3>
+                                    <small>@question.Points ponto(s) · @question.Type</small>
+
+                                    @if (quizOptions.TryGetValue(question.Id, out var options) && options.Count > 0)
+                                    {
+                                        <div class="quiz-options">
+                                            @foreach (var option in options)
+                                            {
+                                                var isSelected = selectedOptions.TryGetValue(question.Id, out var selected) && selected == option.Id;
+                                                var showCorrect = quizReviewMode && option.IsCorrect;
+                                                var showWrong = quizReviewMode && isSelected && !option.IsCorrect;
+
+                                                <button class="quiz-option @(isSelected ? "selected" : string.Empty) @(showCorrect ? "correct" : string.Empty) @(showWrong ? "wrong" : string.Empty)"
+                                                        type="button"
+                                                        @onclick="() => SelectOption(question.Id, option.Id)"
+                                                        disabled="@quizReviewMode">
+                                                    <span>@(isSelected ? "●" : "○")</span>
+                                                    <span>@option.OptionText</span>
+                                                    @if (quizReviewMode && option.IsCorrect)
+                                                    {
+                                                        <small class="quiz-correct-mark">(correta)</small>
+                                                    }
+                                                    @if (quizReviewMode && isSelected && !option.IsCorrect)
+                                                    {
+                                                        <small class="quiz-incorrect-mark">(sua resposta)</small>
+                                                    }
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <textarea class="quiz-text-answer"
+                                                  value="@GetWrittenAnswer(question.Id)"
+                                                  @oninput="args => SetWrittenAnswer(question.Id, args)"
+                                                  placeholder="Digite sua resposta..."
+                                                  rows="3"
+                                                  readonly="@(quizReviewMode ? true : null)"></textarea>
+                                        @if (quizReviewMode)
+                                        {
+                                            <p class="quiz-text-review">Resposta registrada: @GetWrittenAnswer(question.Id)</p>
+                                        }
+                                    }
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(quizMessage))
+                {
+                    <p class="learning-message" role="status">@quizMessage</p>
+                }
+
+                <footer class="quiz-modal-footer">
+                    <span>@quizQuestions.Count questão(ões)</span>
+                    @if (quizReviewMode)
+                    {
+                        <button class="forum-open-button" type="button" @onclick="CloseQuiz">Fechar</button>
+                    }
+                    else
+                    {
+                        <button class="forum-open-button" type="button" @onclick="SubmitQuizAsync" disabled="@(quizSubmitting || quizLoading || quizQuestions.Count == 0)">@(quizSubmitting ? "Enviando..." : "Enviar respostas")</button>
+                    }
+                </footer>
+            </section>
+        </div>
     }
 </main>
